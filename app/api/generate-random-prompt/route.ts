@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
 			prompt: `Generate a short, creative image variation prompt (max 10 words) for modifying a character or object. 
 Examples: "wearing a wizard hat", "in cyberpunk style", "with rainbow colors", "doing a backflip", "as a superhero".
 Just return the prompt text, nothing else.`,
-			temperature: 1.5,
+			temperature: 1,
 		})
 
 		return NextResponse.json({
