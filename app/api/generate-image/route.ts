@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
 			: `data:image/png;base64,${imageBase64}`
 
 		// Combine user prompt with base prompt for better results
-		const finalPrompt = `Transform this sketch into: high-quality character art, clean lines, ${prompt}`
+		const finalPrompt = `Transform this sketch into: high-quality character art, clean lines, plain colored background, ${prompt}`
 
 		// Call fal.ai Gemini model for image editing
 		const result = await fal.subscribe('fal-ai/gemini-25-flash-image/edit', {

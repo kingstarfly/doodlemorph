@@ -25,16 +25,16 @@ export async function POST(req: NextRequest) {
 
 		const { text } = await generateText({
 			model: groq('openai/gpt-oss-20b'),
-			prompt: `You are an expert image generation prompt enhancer. Take the user's basic prompt and enhance it to create a more detailed, creative, and effective prompt for AI image generation.
+			prompt: `You are an expert at crafting concise image generation prompts. Transform the user's prompt into a short, focused phrase.
 
 User's original prompt: "${userPrompt}"
 
-Enhance this prompt by:
-1. Adding vivid descriptive details
-2. Improving artistic style descriptions  
-3. Adding composition and lighting suggestions
-4. Making it more specific and creative
-5. Keeping it descriptive but not overly long (max 80 words)
+Create an enhanced prompt using:
+- Short, punchy phrases
+- Consistent theme and style
+- Maximum 30 words
+- Focus on 1-2 key visual elements
+- Use comma-separated descriptors
 
 Return only the enhanced prompt, nothing else.`,
 			temperature: 0.7,

@@ -6,7 +6,7 @@ const FAL_API_KEY = process.env.FAL_API_KEY
 
 // Define schemas with Zod
 const VariantSchema = z.object({
-	prompt: z.string().min(1, 'Variant prompt is required').max(100),
+	prompt: z.string().min(1, 'Variant prompt is required').max(500),
 })
 
 const GenerateVariantsSchema = z.object({
@@ -21,6 +21,7 @@ export async function POST(request: NextRequest) {
 		// Validate and parse input with Zod
 		const validation = GenerateVariantsSchema.safeParse(body)
 		if (!validation.success) {
+			console.log('Validation error:', validation.error.issues)
 			return NextResponse.json(
 				{
 					success: false,

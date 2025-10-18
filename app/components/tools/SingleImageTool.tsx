@@ -213,6 +213,7 @@ export function SingleImageTool(props: SingleImageToolProps) {
 			setIsGenerating(true)
 			setProgress('Extracting image data...')
 
+			// Capture reference shape early before any async operations
 			const imageShape = props.selectedShapes[0] as TLImageShape
 			const imageBase64 = await extractImageFromShape(editor, imageShape)
 
@@ -276,7 +277,7 @@ export function SingleImageTool(props: SingleImageToolProps) {
 				description: 'Getting ready to generate animation',
 			})
 
-			// Extract image as base64
+			// Capture reference shape early before any async operations
 			const imageShape = props.selectedShapes[0] as TLImageShape
 			const imageBase64 = await extractImageFromShape(editor, imageShape)
 
@@ -360,14 +361,14 @@ export function SingleImageTool(props: SingleImageToolProps) {
 					disabled={isGenerating || isAnimationGenerating}
 					className={`action-button ${activeMode === 'variants' ? 'active' : ''}`}
 				>
-					✨ Generate Variants
+					✨ Create Variants
 				</button>
 				<button
 					onClick={handleAnimationClick}
 					disabled={isGenerating || isAnimationGenerating}
 					className={`action-button ${activeMode === 'animation' ? 'active' : ''}`}
 				>
-					🎬 Generate Animation
+					🎬 Create Animation
 				</button>
 			</div>
 
@@ -439,7 +440,7 @@ export function SingleImageTool(props: SingleImageToolProps) {
 							disabled={isGenerating || isAnimationGenerating}
 							className="generate-button"
 						>
-							✨ Generate Variant{variants.length > 1 ? 's' : ''}
+							✨ Confirm
 						</button>
 					</div>
 				</div>
@@ -486,7 +487,7 @@ export function SingleImageTool(props: SingleImageToolProps) {
 						disabled={isGenerating || isAnimationGenerating}
 						className="create-animation-button"
 					>
-						🎬 Create Animation
+						🎬 Confirm
 					</button>
 				</div>
 			)}

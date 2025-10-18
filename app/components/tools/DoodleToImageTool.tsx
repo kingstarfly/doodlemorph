@@ -28,6 +28,9 @@ export function DoodleToImageTool(props: DoodleToImageToolProps) {
 			setIsGenerating(true)
 			setProgress('Capturing drawing...')
 
+			// Capture reference shape early before any async operations
+			const referenceShape = props.selectedShapes[0]
+
 			// 1. Capture drawing as image
 			const imageBase64 = await captureShapesAsImage(editor, props.selectedShapes)
 
@@ -63,7 +66,7 @@ export function DoodleToImageTool(props: DoodleToImageToolProps) {
 			await placeImageOnCanvas(
 				editor,
 				result.imageUrl,
-				props.selectedShapes,
+				referenceShape,
 				stylePrompt || 'high quality character art'
 			)
 
@@ -160,7 +163,7 @@ export function DoodleToImageTool(props: DoodleToImageToolProps) {
 					disabled={isGenerating || isEnhancing}
 					className="generate-button"
 				>
-					✨ Generate Image
+					✨ Morph
 				</button>
 			</div>
 

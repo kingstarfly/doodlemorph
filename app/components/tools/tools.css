@@ -61,6 +61,10 @@
 	font-family: inherit;
 	cursor: pointer;
 	white-space: nowrap;
+	min-height: 40px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .generate-button:hover:not(:disabled) {
@@ -400,6 +404,10 @@
 	font-size: 14px;
 	font-family: inherit;
 	cursor: pointer;
+	min-height: 40px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .add-variant-button:hover:not(:disabled) {

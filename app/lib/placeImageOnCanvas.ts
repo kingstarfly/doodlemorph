@@ -3,14 +3,14 @@ import { Editor, TLShape, createShapeId, AssetRecordType } from 'tldraw'
 export async function placeImageOnCanvas(
 	editor: Editor,
 	imageUrl: string,
-	nearShapes: TLShape[],
+	referenceShape: TLShape,
 	prompt?: string
 ): Promise<string> {
 	// Get the position to place the new image
-	// Place it to the right of the selected shapes
-	const bounds = editor.getSelectionPageBounds()
+	// Place it to the right of the reference shape
+	const bounds = editor.getShapePageBounds(referenceShape)
 	if (!bounds) {
-		throw new Error('Could not get bounds of selection.')
+		throw new Error('Could not get bounds of reference shape. The shape may have been deleted.')
 	}
 
 	const newShapeId = createShapeId()
