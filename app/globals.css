@@ -153,9 +153,9 @@
 	cursor: pointer;
 }
 
-/* ------------------ Doodleverse Logo ----------------- */
+/* ------------------ Doodlemorph Logo ----------------- */
 
-.doodleverse-logo {
+.doodlemorph-logo {
 	position: absolute;
 	top: 8px;
 	left: 140px; /* Position after hamburger menu and page menu */
@@ -170,7 +170,7 @@
 
 /* Adjust for smaller screens */
 @media (max-width: 640px) {
-	.doodleverse-logo {
+	.doodlemorph-logo {
 		left: 120px;
 		font-size: 14px;
 	}
