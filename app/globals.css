@@ -153,6 +153,7 @@
 	cursor: pointer;
 }
 
+<<<<<<< Updated upstream
 /* ------------------ Doodlemorph Logo ----------------- */
 
 .doodlemorph-logo {
@@ -175,5 +176,100 @@
 		left: 10px;
 		top: 48px;
 		font-size: 14px;
+=======
+/* ------------------ Onboarding Message ----------------- */
+
+.onboarding-message {
+	position: absolute;
+	bottom: 80px;
+	right: 24px;
+	z-index: 9999;
+	pointer-events: none;
+	animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.onboarding-content {
+	background: var(--color-low);
+	border: 1px solid var(--color-panel-contrast);
+	border-radius: 12px;
+	padding: 20px 24px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+	backdrop-filter: blur(10px);
+	min-width: 200px;
+}
+
+.onboarding-title {
+	font-size: 16px;
+	font-weight: 700;
+	color: var(--color-text-0);
+	margin-bottom: 12px;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+.onboarding-step {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 16px;
+	color: var(--color-text-0);
+	margin: 8px 0;
+	font-weight: 500;
+}
+
+.onboarding-step:first-child {
+	margin-top: 0;
+}
+
+.onboarding-step:last-child {
+	margin-bottom: 0;
+}
+
+.step-number {
+	color: var(--color-primary);
+	font-weight: 700;
+	font-size: 17px;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+	.onboarding-message {
+		bottom: 70px;
+		right: 16px;
+		left: 16px;
+		display: flex;
+		justify-content: flex-end;
+	}
+
+	.onboarding-content {
+		padding: 16px 20px;
+		min-width: auto;
+		max-width: 240px;
+	}
+
+	.onboarding-title {
+		font-size: 15px;
+		margin-bottom: 10px;
+	}
+
+	.onboarding-step {
+		font-size: 15px;
+		margin: 7px 0;
+	}
+
+	.step-number {
+		font-size: 16px;
+>>>>>>> Stashed changes
 	}
 }
