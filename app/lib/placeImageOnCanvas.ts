@@ -3,7 +3,8 @@ import { Editor, TLShape, createShapeId, AssetRecordType } from 'tldraw'
 export async function placeImageOnCanvas(
 	editor: Editor,
 	imageUrl: string,
-	nearShapes: TLShape[]
+	nearShapes: TLShape[],
+	prompt?: string
 ): Promise<string> {
 	// Get the position to place the new image
 	// Place it to the right of the selected shapes
@@ -83,6 +84,9 @@ export async function placeImageOnCanvas(
 			assetId: assetId,
 			w: width,
 			h: height,
+		},
+		meta: {
+			generatedPrompt: prompt || '',
 		},
 	})
 

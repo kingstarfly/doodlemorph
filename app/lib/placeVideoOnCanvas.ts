@@ -6,7 +6,8 @@ import { Editor, TLShape, createShapeId, AssetRecordType } from 'tldraw'
 export async function placeVideoOnCanvas(
 	editor: Editor,
 	videoUrl: string,
-	originalShape: TLShape
+	originalShape: TLShape,
+	prompt?: string
 ): Promise<string> {
 	// Get the bounds of the original shape
 	const originalPageBounds = editor.getShapePageBounds(originalShape)
@@ -87,6 +88,9 @@ export async function placeVideoOnCanvas(
 			assetId: assetId,
 			w: width,
 			h: height,
+		},
+		meta: {
+			generatedPrompt: prompt || '',
 		},
 	})
 

@@ -6,7 +6,8 @@ import { Editor, TLShape, createShapeId, AssetRecordType } from 'tldraw'
 export async function placeVariantsOnCanvas(
 	editor: Editor,
 	variantUrls: string[],
-	originalShape: TLShape
+	originalShape: TLShape,
+	prompts?: string[]
 ): Promise<string[]> {
 	if (variantUrls.length === 0) {
 		return []
@@ -97,6 +98,9 @@ export async function placeVariantsOnCanvas(
 				assetId: assetId,
 				w: width,
 				h: height,
+			},
+			meta: {
+				generatedPrompt: prompts && prompts[i] ? prompts[i] : '',
 			},
 		})
 

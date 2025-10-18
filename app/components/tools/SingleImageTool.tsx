@@ -107,7 +107,8 @@ export function SingleImageTool(props: SingleImageToolProps) {
 			setProgress('Placing variants on canvas...')
 
 			const variantUrls = result.variants.map((v: any) => v.imageUrl)
-			await placeVariantsOnCanvas(editor, variantUrls, imageShape)
+			const variantPrompts = validVariants.map((v) => v.prompt)
+			await placeVariantsOnCanvas(editor, variantUrls, imageShape, variantPrompts)
 
 			setIsGenerating(false)
 			setProgress('')
@@ -209,8 +210,8 @@ export function SingleImageTool(props: SingleImageToolProps) {
 				description: 'Almost done!',
 			})
 
-			// Place the video on the canvas (reusing imageShape from above)
-			await placeVideoOnCanvas(editor, result.videoUrl, imageShape)
+			// Place the video on the canvas with prompt metadata (reusing imageShape from above)
+			await placeVideoOnCanvas(editor, result.videoUrl, imageShape, animationPrompt)
 
 			setIsAnimationGenerating(false)
 			addToast({

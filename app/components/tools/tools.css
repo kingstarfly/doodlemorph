@@ -1,7 +1,7 @@
 /* Contextual Toolbar Container */
 .contextual-toolbar {
 	position: fixed;
-	bottom: 20px;
+	bottom: 80px;
 	left: 50%;
 	transform: translateX(-50%);
 	z-index: 1000;
@@ -429,6 +429,61 @@
 	cursor: not-allowed;
 }
 
+/* Prompt Display Component */
+.prompt-display {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2);
+	min-width: 400px;
+	max-width: 600px;
+	padding-bottom: var(--space-3);
+	margin-bottom: var(--space-2);
+	border-bottom: 1px solid var(--color-muted-1);
+}
+
+.prompt-display-header {
+	display: flex;
+	align-items: center;
+	gap: var(--space-2);
+}
+
+.prompt-display-icon {
+	font-size: 20px;
+}
+
+.prompt-display-title {
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--color-text);
+}
+
+.prompt-display-content {
+	padding: var(--space-3);
+	background: var(--color-muted-2);
+	border-radius: var(--radius-2);
+}
+
+.prompt-text {
+	font-size: 14px;
+	color: var(--color-text);
+	margin: 0;
+	line-height: 1.5;
+	font-style: italic;
+}
+
+.video-info {
+	padding: var(--space-2);
+	background: var(--color-muted-2);
+	border-radius: var(--radius-2);
+}
+
+.video-info .info-text {
+	margin: 0;
+	font-size: 14px;
+	color: var(--color-text-3);
+	text-align: center;
+}
+
 /* Mobile Responsive */
 @media (max-width: 640px) {
 	.contextual-toolbar {
@@ -440,7 +495,8 @@
 	.doodle-to-image-tool,
 	.image-to-animation-tool,
 	.image-variants-tool,
-	.single-image-tool {
+	.single-image-tool,
+	.prompt-display {
 		min-width: unset;
 		width: 100%;
 	}

@@ -58,8 +58,13 @@ export function DoodleToImageTool(props: DoodleToImageToolProps) {
 
 			setProgress('Placing on canvas...')
 
-			// 3. Place on canvas
-			await placeImageOnCanvas(editor, result.imageUrl, props.selectedShapes)
+			// 3. Place on canvas with prompt metadata
+			await placeImageOnCanvas(
+				editor,
+				result.imageUrl,
+				props.selectedShapes,
+				stylePrompt || 'high quality character art'
+			)
 
 			setIsGenerating(false)
 			setProgress('')

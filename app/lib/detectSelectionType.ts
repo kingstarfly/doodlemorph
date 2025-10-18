@@ -1,7 +1,7 @@
 import { Editor, TLShape } from 'tldraw'
 
 export type SelectionType = {
-	type: 'drawings' | 'image' | 'none'
+	type: 'drawings' | 'image' | 'generated' | 'none'
 	count: number
 	shapes: TLShape[]
 }
@@ -21,19 +21,26 @@ export function detectSelectionType(editor: Editor): SelectionType {
 
 	const drawings = shapes.filter((shape) => ['draw', 'geo', 'arrow'].includes(shape.type))
 	const images = shapes.filter((shape) => shape.type === 'image')
+	const videos = shapes.filter((shape) => shape.type === 'video')
 
-	console.log('Drawings:', drawings.length, 'Images:', images.length)
+	console.log('Drawings:', drawings.length, 'Images:', images.length, 'Videos:', videos.length)
 
 	// If user has selected drawing shapes, return drawings type
-	if (drawings.length > 0 && images.length === 0) {
+	if (drawings.length > 0 && images.length === 0 && videos.length === 0) {
 		return { type: 'drawings', count: drawings.length, shapes: drawings }
 	}
 
-	// If user has selected exactly 1 image, return image type
-	if (images.length === 1 && drawings.length === 0) {
+	// If user has selected exactly 1 image (generated or not), return image type
+	if (images.length === 1 && drawings.length === 0 && videos.length === 0) {
 		return { type: 'image', count: 1, shapes: images }
 	}
 
-	// Multiple images, mixed selection, or unsupported types - no AI toolbar
+	// If user has selected exactly 1 video, show it as generated
+	// (videos don't have tools, but ToolbarContainer will show prompt if available)
+	if (videos.length === 1 && drawings.length === 0 && images.length === 0) {
+		return { type: 'generated', count: 1, shapes: videos }
+	}
+
+	// Multiple items, mixed selection, or unsupported types - no AI toolbar
 	return { type: 'none', count: 0, shapes: [] }
 }
