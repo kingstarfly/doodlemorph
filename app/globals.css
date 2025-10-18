@@ -168,6 +168,19 @@
 	pointer-events: none;
 	letter-spacing: -0.02em;
 	user-select: none;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.doodlemorph-text {
+	font-size: 16px;
+	font-weight: 600;
+}
+
+.doodlemorph-logo-image {
+	border-radius: 50%;
+	object-fit: cover;
 }
 
 /* Adjust for smaller screens */
