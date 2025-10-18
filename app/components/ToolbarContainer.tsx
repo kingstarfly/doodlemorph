@@ -2,7 +2,7 @@ import { useEditor } from 'tldraw'
 import { useEffect, useState } from 'react'
 import { detectSelectionType, SelectionType } from '../lib/detectSelectionType'
 import { DoodleToImageTool } from './tools/DoodleToImageTool'
-import { ImageToAnimationTool } from './tools/ImageToAnimationTool'
+import { SingleImageTool } from './tools/SingleImageTool'
 import './tools/tools.css'
 
 export function ToolbarContainer() {
@@ -43,9 +43,7 @@ export function ToolbarContainer() {
 				<DoodleToImageTool selectedShapes={selectionType.shapes} />
 			)}
 
-			{selectionType.type === 'images' && (
-				<ImageToAnimationTool selectedShapes={selectionType.shapes} />
-			)}
+			{selectionType.type === 'image' && <SingleImageTool selectedShapes={selectionType.shapes} />}
 		</div>
 	)
 }

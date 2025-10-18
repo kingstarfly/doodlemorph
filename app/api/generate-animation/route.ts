@@ -1,54 +1,87 @@
 import { fal } from '@fal-ai/client'
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
+
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY
+
+// Define request schema with Zod
+const GenerateAnimationSchema = z.object({
+	imageUrl: z.string().url('Must be a valid URL'),
+	prompt: z
+		.string()
+		.min(1)
+		.max(500)
+		.default('smooth animation sequence, character movement, consistent style, natural motion'),
+	duration: z.enum(['4', '8', '12']).default('4'),
+	aspectRatio: z.enum(['auto', '9:16', '16:9']).default('auto'),
+	resolution: z.enum(['auto', '720p']).default('auto'),
+	openaiApiKey: z.string().nullable(),
+})
 
 export async function POST(request: NextRequest) {
 	try {
-		const { imageUrls, fps = 8, apiKey } = await request.json()
+		const body = await request.json()
 
-		// Validate inputs
-		if (!imageUrls || !Array.isArray(imageUrls) || imageUrls.length < 2) {
+		// Validate and parse input with Zod
+		const validation = GenerateAnimationSchema.safeParse(body)
+		if (!validation.success) {
 			return NextResponse.json(
-				{ success: false, error: 'Need at least 2 image URLs' },
+				{
+					success: false,
+					error: 'Invalid input',
+					details: validation.error.issues,
+				},
+				{ status: 400 }
+			)
+		}
+		console.log('Validation data:', validation.data)
+
+		const { imageUrl, prompt, duration, aspectRatio, resolution, openaiApiKey } = validation.data
+
+		// ONLY use OpenAI key (prefer user-submitted over environment variable)
+		const finalOpenaiApiKey = openaiApiKey ?? OPENAI_API_KEY
+		if (!finalOpenaiApiKey) {
+			return NextResponse.json(
+				{ success: false, error: 'OpenAI API key is required for Sora 2 animation' },
 				{ status: 400 }
 			)
 		}
 
-		if (!apiKey) {
-			return NextResponse.json({ success: false, error: 'API key is required' }, { status: 400 })
-		}
+		// Configure fal.ai client with OpenAI key
+		fal.config({ credentials: finalOpenaiApiKey })
 
-		// Configure fal.ai client
-		fal.config({ credentials: apiKey })
-
-		// Use the first image as the base and create a prompt for animation
-		const firstImageUrl = imageUrls[0]
-
-		// Call fal.ai video model for image-to-video
-		// Using kling-video as it's more suitable for image sequences
-		const result = await fal.subscribe('fal-ai/kling-video/v1/standard/image-to-video', {
+		// Call fal.ai Sora 2 model for image-to-video
+		const result = await fal.subscribe('fal-ai/sora-2/image-to-video', {
 			input: {
-				prompt: 'smooth animation sequence, character movement, consistent style',
-				image_url: firstImageUrl,
-				duration: '5',
-				aspect_ratio: '16:9',
+				prompt: prompt,
+				image_url: imageUrl,
+				duration: duration,
+				aspect_ratio: aspectRatio,
+				resolution: resolution,
 			},
 			logs: true,
 			onQueueUpdate: (update: any) => {
 				if (update.status === 'IN_PROGRESS') {
-					console.log('Video generation in progress...', update)
+					console.log('Sora 2 video generation in progress...', update)
+					if (update.logs) {
+						update.logs.map((log: any) => log.message).forEach(console.log)
+					}
 				}
 			},
 		})
 
 		// Extract the video URL from the result
 		const videoUrl = result.data.video.url
+		const videoId = result.data.video_id
 
 		return NextResponse.json({
 			success: true,
 			videoUrl: videoUrl,
+			videoId: videoId,
+			requestId: result.requestId,
 		})
 	} catch (error: any) {
-		console.error('Error generating animation:', error)
+		console.error('Error generating animation with Sora 2:', error)
 		return NextResponse.json(
 			{
 				success: false,

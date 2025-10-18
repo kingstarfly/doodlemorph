@@ -11,11 +11,11 @@ Transform tldraw canvas into an AI-powered animation studio. Users can draw sket
 - Choose from quick style presets (Cartoon, Pixel Art, 3D Render, Sticker) or write custom prompts
 - AI generates a styled, high-quality image based on your sketch
 
-### 🎬 Images to Animation
+### 🎬 Image to Animation with Sora 2
 
-- Generate multiple styled images of your character
-- Select 2 or more images to create an animation
-- AI generates a smooth video animation from your image sequence
+- Generate a styled image of your character
+- Select any image to bring it to life with OpenAI's Sora 2
+- AI generates a smooth, cinematic video animation from a single image
 - Download the final animation as MP4
 
 ## Getting Started
@@ -23,7 +23,8 @@ Transform tldraw canvas into an AI-powered animation studio. Users can draw sket
 ### Prerequisites
 
 - Node.js 18+ installed
-- A fal.ai API key (get one at [fal.ai/dashboard/keys](https://fal.ai/dashboard/keys))
+- A fal.ai API key (required - get one at [fal.ai/dashboard/keys](https://fal.ai/dashboard/keys))
+- An OpenAI API key with Sora access (optional - for Sora 2 animations using your OpenAI credits)
 
 ### Installation
 
@@ -40,18 +41,21 @@ cd ai-canvas-character-creator
 npm install
 ```
 
-3. Create a `.env.local` file and add your fal.ai API key:
-
-```bash
-NEXT_PUBLIC_FAL_KEY=your-fal-api-key-here
-```
-
-Alternatively, you can enter your API key directly in the app's input field at runtime.
-
-4. Run the development server:
+3. Run the development server:
 
 ```bash
 npm run dev
+```
+
+4. Enter your API keys in the app:
+   - **FAL API Key** (Required): Used for image generation and video processing
+   - **OpenAI API Key** (Optional): If you have Sora API access, this uses your OpenAI credits instead of fal.ai billing
+
+Alternatively, you can create a `.env.local` file with your keys (though the UI input is recommended):
+
+```bash
+NEXT_PUBLIC_FAL_KEY=your-fal-api-key-here
+NEXT_PUBLIC_OPENAI_KEY=your-openai-api-key-here
 ```
 
 5. Open [http://localhost:3000](http://localhost:3000) in your browser
@@ -68,21 +72,23 @@ npm run dev
 6. Wait for the AI to generate your styled image
 7. The image will appear on the canvas next to your drawing
 
-### Creating Animations
+### Creating Animations with Sora 2
 
-1. Generate 2 or more styled images using the process above
-2. Select multiple images (hold Shift and click, or drag to select)
-3. The animation toolbar will appear showing the selection order
-4. Click "🎬 Create Animation"
-5. Wait 30-60 seconds for the video to generate
+1. Generate a styled image using the process above, or use any existing image on the canvas
+2. Select a single image (click to select)
+3. The animation toolbar will appear with Sora 2 info
+4. Click "🎬 Create Animation with Sora 2"
+5. Wait 1-2 minutes for Sora 2 to generate your cinematic video
 6. Preview the animation in the toolbar
 7. Click "📥 Download Animation" to save the MP4 file
+
+**Note**: Sora 2 animates a single image and creates natural, cinematic motion. If you have an OpenAI API key with Sora access, it will use your OpenAI credits. Otherwise, fal.ai will handle the billing.
 
 ## Tech Stack
 
 - **Frontend**: Next.js 14, React, TypeScript
 - **Canvas**: tldraw v3
-- **AI**: fal.ai (flux-dev for image generation, kling-video for animations)
+- **AI**: fal.ai (flux-dev for image generation, Sora 2 for animations)
 
 ## Project Structure
 

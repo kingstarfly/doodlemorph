@@ -1,7 +1,7 @@
 import { Editor, TLShape } from 'tldraw'
 
 export type SelectionType = {
-	type: 'drawings' | 'images' | 'image' | 'none'
+	type: 'drawings' | 'image' | 'none'
 	count: number
 	shapes: TLShape[]
 }
@@ -29,16 +29,11 @@ export function detectSelectionType(editor: Editor): SelectionType {
 		return { type: 'drawings', count: drawings.length, shapes: drawings }
 	}
 
-	// If user has selected 2+ images, return images type for animation
-	if (images.length >= 2) {
-		return { type: 'images', count: images.length, shapes: images }
-	}
-
 	// If user has selected exactly 1 image, return image type
 	if (images.length === 1 && drawings.length === 0) {
 		return { type: 'image', count: 1, shapes: images }
 	}
 
-	// Mixed selection or unsupported types
+	// Multiple images, mixed selection, or unsupported types - no AI toolbar
 	return { type: 'none', count: 0, shapes: [] }
 }

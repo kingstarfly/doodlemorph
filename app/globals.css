@@ -21,6 +21,10 @@
 	display: none !important;
 }
 
+.tlui-share-zone__wrapper {
+	display: none !important;
+}
+
 .editor {
 	position: fixed;
 	inset: 0;
@@ -58,13 +62,12 @@
 
 .your-own-api-key {
 	position: absolute;
-	bottom: 72px;
-	right: 0px;
-	width: 100%;
+	top: 8px;
+	right: 8px;
 	display: flex;
 	flex-direction: column;
-	align-items: center;
-	justify-content: center;
+	align-items: flex-end;
+	justify-content: flex-start;
 	z-index: 9999999;
 	color: var(--color-text-0);
 	pointer-events: none;
@@ -72,21 +75,36 @@
 
 .your-own-api-key__inner {
 	display: flex;
-	flex-direction: row;
-	max-width: 300px;
+	flex-direction: column;
+	max-width: 320px;
 	width: 100%;
-	gap: 4px;
+	gap: 8px;
 	background-color: var(--color-low);
 	border-radius: 8px;
-	padding: 6px;
+	padding: 8px;
 	pointer-events: all;
+}
+
+.api-key-section {
+	display: flex;
+	flex-direction: row;
+	gap: 4px;
+	align-items: center;
+}
+
+.api-key-label {
+	font-size: 10px;
+	color: var(--color-text-1);
+	white-space: nowrap;
+	min-width: 80px;
+	font-weight: 500;
 }
 
 .your-own-api-key input {
 	all: inset;
 	padding: 6px 12px;
 	border-radius: 4px;
-	color: transparent;
+	color: var(--color-text-0);
 	border: none;
 	font-size: 12px;
 	background: var(--color-panel);
@@ -96,11 +114,15 @@
 	font-family: Inter, sans-serif;
 }
 
+.your-own-api-key input::placeholder {
+	color: var(--color-text-2);
+	opacity: 0.5;
+}
+
 .your-own-api-key__mobile {
-	bottom: 108px;
+	top: 8px;
 }
 .your-own-api-key__mobile input {
-	bottom: 108px;
 	font-size: 16px !important;
 	pointer-events: all;
 }
@@ -108,21 +130,6 @@
 .input__wrapper {
 	position: relative;
 	flex-grow: 2;
-}
-
-.input__wrapper:not(:focus-within)::after {
-	content: 'Your fal.ai API Key';
-	display: block;
-	position: absolute;
-	inset: 0px;
-	display: flex;
-	align-items: center;
-	justify-content: flex-start;
-	padding: 0px 12px;
-	z-index: 999999999;
-	background-color: none;
-	font-size: 12px;
-	font-family: Inter, sans-serif;
 }
 
 .input__wrapper::after {
