@@ -1,8 +1,9 @@
 import { useCallback, useState } from 'react'
-import { TLShape, TLImageShape, useEditor, useToasts } from 'tldraw'
+import { TLShape, TLImageShape, TLShapeId, useEditor, useToasts } from 'tldraw'
 import { extractImageFromShape } from '../../lib/extractImageFromShape'
 import { placeVariantsOnCanvas } from '../../lib/placeVariantsOnCanvas'
 import { placeVideoOnCanvas } from '../../lib/placeVideoOnCanvas'
+import { createPlaceholderShape, deletePlaceholderShape } from '../../lib/createPlaceholderShape'
 import { LoadingIndicator } from '../LoadingIndicator'
 
 export type SingleImageToolProps = {
@@ -199,6 +200,7 @@ export function SingleImageTool(props: SingleImageToolProps) {
 	}, [animationPrompt, addToast])
 
 	const handleGenerateVariants = useCallback(async () => {
+		const placeholderShapeIds: TLShapeId[] = []
 		try {
 			const validVariants = variants.filter((v) => v.prompt.trim() !== '')
 			if (validVariants.length === 0) {
@@ -215,6 +217,27 @@ export function SingleImageTool(props: SingleImageToolProps) {
 
 			// Capture reference shape early before any async operations
 			const imageShape = props.selectedShapes[0] as TLImageShape
+			const bounds = editor.getShapePageBounds(imageShape)
+
+			if (!bounds) {
+				throw new Error('Could not get bounds of reference shape')
+			}
+
+			// Create placeholder shapes for each variant, stacked vertically below
+			const verticalSpacing = 40
+			let currentY = bounds.maxY + verticalSpacing
+			for (let i = 0; i < validVariants.length; i++) {
+				const placeholderId = await createPlaceholderShape(
+					editor,
+					bounds.minX,
+					currentY,
+					bounds.width,
+					bounds.height
+				)
+				placeholderShapeIds.push(placeholderId)
+				currentY += bounds.height + verticalSpacing
+			}
+
 			const imageBase64 = await extractImageFromShape(editor, imageShape)
 
 			setProgress(`Generating ${validVariants.length} variant(s)...`)
@@ -238,6 +261,8 @@ export function SingleImageTool(props: SingleImageToolProps) {
 					title: 'Generation failed',
 					description: result.error || 'Unknown error',
 				})
+				// Clean up placeholders on failure
+				placeholderShapeIds.forEach((id) => deletePlaceholderShape(editor, id))
 				setIsGenerating(false)
 				return
 			}
@@ -246,7 +271,13 @@ export function SingleImageTool(props: SingleImageToolProps) {
 
 			const variantUrls = result.variants.map((v: any) => v.imageUrl)
 			const variantPrompts = validVariants.map((v) => v.prompt)
-			await placeVariantsOnCanvas(editor, variantUrls, imageShape, variantPrompts)
+			await placeVariantsOnCanvas(
+				editor,
+				variantUrls,
+				imageShape,
+				variantPrompts,
+				placeholderShapeIds
+			)
 
 			setIsGenerating(false)
 			setProgress('')
@@ -262,12 +293,15 @@ export function SingleImageTool(props: SingleImageToolProps) {
 				title: 'Something went wrong',
 				description: error.message.slice(0, 100),
 			})
+			// Clean up placeholders on error
+			placeholderShapeIds.forEach((id) => deletePlaceholderShape(editor, id))
 			setIsGenerating(false)
 			setProgress('')
 		}
 	}, [editor, props.selectedShapes, variants, addToast])
 
 	const handleGenerateAnimation = useCallback(async () => {
+		let placeholderShapeId: TLShapeId | null = null
 		try {
 			setIsAnimationGenerating(true)
 
@@ -279,6 +313,22 @@ export function SingleImageTool(props: SingleImageToolProps) {
 
 			// Capture reference shape early before any async operations
 			const imageShape = props.selectedShapes[0] as TLImageShape
+			const bounds = editor.getShapePageBounds(imageShape)
+
+			if (!bounds) {
+				throw new Error('Could not get bounds of reference shape')
+			}
+
+			// Create placeholder shape below the original image
+			const verticalSpacing = 40
+			placeholderShapeId = await createPlaceholderShape(
+				editor,
+				bounds.minX,
+				bounds.maxY + verticalSpacing,
+				bounds.width,
+				bounds.height
+			)
+
 			const imageBase64 = await extractImageFromShape(editor, imageShape)
 
 			// Show generation toast
@@ -307,6 +357,10 @@ export function SingleImageTool(props: SingleImageToolProps) {
 					title: 'Animation failed',
 					description: result.error || 'Unknown error',
 				})
+				// Clean up placeholder on failure
+				if (placeholderShapeId) {
+					deletePlaceholderShape(editor, placeholderShapeId)
+				}
 				setIsAnimationGenerating(false)
 				return
 			}
@@ -318,7 +372,13 @@ export function SingleImageTool(props: SingleImageToolProps) {
 			})
 
 			// Place the video on the canvas with prompt metadata (reusing imageShape from above)
-			await placeVideoOnCanvas(editor, result.videoUrl, imageShape, animationPrompt)
+			await placeVideoOnCanvas(
+				editor,
+				result.videoUrl,
+				imageShape,
+				animationPrompt,
+				placeholderShapeId
+			)
 
 			setIsAnimationGenerating(false)
 			addToast({
@@ -333,6 +393,10 @@ export function SingleImageTool(props: SingleImageToolProps) {
 				title: 'Something went wrong',
 				description: error.message.slice(0, 100),
 			})
+			// Clean up placeholder on error
+			if (placeholderShapeId) {
+				deletePlaceholderShape(editor, placeholderShapeId)
+			}
 			setIsAnimationGenerating(false)
 		}
 	}, [editor, props.selectedShapes, addToast, animationPrompt, generateAudio])

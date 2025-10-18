@@ -1,7 +1,8 @@
 import { useCallback, useState } from 'react'
-import { TLShape, useEditor, useToasts } from 'tldraw'
+import { TLShape, TLShapeId, useEditor, useToasts } from 'tldraw'
 import { captureShapesAsImage } from '../../lib/captureShapesAsImage'
 import { placeImageOnCanvas } from '../../lib/placeImageOnCanvas'
+import { createPlaceholderShape, deletePlaceholderShape } from '../../lib/createPlaceholderShape'
 import { LoadingIndicator } from '../LoadingIndicator'
 
 export type DoodleToImageToolProps = {
@@ -24,12 +25,46 @@ export function DoodleToImageTool(props: DoodleToImageToolProps) {
 	const [isEnhancing, setIsEnhancing] = useState(false)
 
 	const handleGenerate = useCallback(async () => {
+		let placeholderShapeId: TLShapeId | null = null
 		try {
 			setIsGenerating(true)
 			setProgress('Capturing drawing...')
 
 			// Capture reference shape early before any async operations
 			const referenceShape = props.selectedShapes[0]
+
+			// Calculate the combined bounds of ALL selected shapes
+			let minX = Infinity
+			let maxX = -Infinity
+			let minY = Infinity
+			let maxY = -Infinity
+
+			for (const shape of props.selectedShapes) {
+				const shapeBounds = editor.getShapePageBounds(shape)
+				if (shapeBounds) {
+					minX = Math.min(minX, shapeBounds.minX)
+					maxX = Math.max(maxX, shapeBounds.maxX)
+					minY = Math.min(minY, shapeBounds.minY)
+					maxY = Math.max(maxY, shapeBounds.maxY)
+				}
+			}
+
+			if (minX === Infinity || maxX === -Infinity || minY === Infinity || maxY === -Infinity) {
+				throw new Error('Could not get bounds of selected shapes')
+			}
+
+			const combinedWidth = maxX - minX
+			const combinedHeight = maxY - minY
+			const combinedMidY = minY + combinedHeight / 2
+
+			// Create placeholder shape positioned to the right of the combined selection
+			placeholderShapeId = await createPlaceholderShape(
+				editor,
+				maxX + 60,
+				combinedMidY - combinedHeight / 2,
+				combinedWidth,
+				combinedHeight
+			)
 
 			// 1. Capture drawing as image
 			const imageBase64 = await captureShapesAsImage(editor, props.selectedShapes)
@@ -56,18 +91,36 @@ export function DoodleToImageTool(props: DoodleToImageToolProps) {
 					title: 'Generation failed',
 					description: result.error || 'Unknown error',
 				})
+				// Clean up placeholder on failure
+				if (placeholderShapeId) {
+					deletePlaceholderShape(editor, placeholderShapeId)
+				}
 				setIsGenerating(false)
 				return
 			}
 
 			setProgress('Placing on canvas...')
 
-			// 3. Place on canvas with prompt metadata
+			// 3. Place on canvas with prompt metadata, updating the placeholder
+			// Create a synthetic bounds object with the combined dimensions
+			const combinedBounds = {
+				minX,
+				maxX,
+				minY,
+				maxY,
+				width: combinedWidth,
+				height: combinedHeight,
+				midX: minX + combinedWidth / 2,
+				midY: combinedMidY,
+			}
+
 			await placeImageOnCanvas(
 				editor,
 				result.imageUrl,
 				referenceShape,
-				stylePrompt || 'high quality character art'
+				stylePrompt || 'high quality character art',
+				placeholderShapeId,
+				combinedBounds
 			)
 
 			setIsGenerating(false)
@@ -83,6 +136,10 @@ export function DoodleToImageTool(props: DoodleToImageToolProps) {
 				title: 'Something went wrong',
 				description: error.message.slice(0, 100),
 			})
+			// Clean up placeholder on error
+			if (placeholderShapeId) {
+				deletePlaceholderShape(editor, placeholderShapeId)
+			}
 			setIsGenerating(false)
 			setProgress('')
 		}
