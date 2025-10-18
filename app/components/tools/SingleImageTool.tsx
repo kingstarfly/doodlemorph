@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react'
 import { TLShape, TLImageShape, useEditor, useToasts } from 'tldraw'
 import { extractImageFromShape } from '../../lib/extractImageFromShape'
 import { placeVariantsOnCanvas } from '../../lib/placeVariantsOnCanvas'
+import { placeVideoOnCanvas } from '../../lib/placeVideoOnCanvas'
 import { LoadingIndicator } from '../LoadingIndicator'
 
 export type SingleImageToolProps = {
@@ -24,7 +25,7 @@ export function SingleImageTool(props: SingleImageToolProps) {
 	const [variants, setVariants] = useState<Variant[]>([{ id: '1', prompt: '' }])
 	const [isGenerating, setIsGenerating] = useState(false)
 	const [progress, setProgress] = useState('')
-	const [generatedVideoUrl, setGeneratedVideoUrl] = useState<string | null>(null)
+	const [isAnimationGenerating, setIsAnimationGenerating] = useState(false)
 	const [animationPrompt, setAnimationPrompt] = useState(
 		'smooth animation sequence, character movement, consistent style, natural motion'
 	)
@@ -61,17 +62,6 @@ export function SingleImageTool(props: SingleImageToolProps) {
 
 	const handleGenerateVariants = useCallback(async () => {
 		try {
-			const input = document.getElementById('fal_key_input') as HTMLInputElement
-			const apiKey = input?.value ?? null
-			if (!apiKey) {
-				addToast({
-					icon: 'warning-triangle',
-					title: 'API Key Required',
-					description: 'Please enter your fal.ai API key',
-				})
-				return
-			}
-
 			const validVariants = variants.filter((v) => v.prompt.trim() !== '')
 			if (validVariants.length === 0) {
 				addToast({
@@ -98,7 +88,6 @@ export function SingleImageTool(props: SingleImageToolProps) {
 				body: JSON.stringify({
 					imageBase64,
 					variants: validVariants.map((v) => ({ prompt: v.prompt })),
-					apiKey,
 				}),
 			})
 
@@ -140,22 +129,13 @@ export function SingleImageTool(props: SingleImageToolProps) {
 
 	const handleGenerateAnimation = useCallback(async () => {
 		try {
-			const falInput = document.getElementById('fal_key_input') as HTMLInputElement
-			const falApiKey = falInput?.value ?? null
-			if (!falApiKey) {
-				addToast({
-					icon: 'warning-triangle',
-					title: 'FAL API Key Required',
-					description: 'Please enter your fal.ai API key',
-				})
-				return
-			}
+			setIsAnimationGenerating(true)
 
-			const openaiInput = document.getElementById('openai_key_input') as HTMLInputElement
-			const userOpenaiApiKey = openaiInput.value.length > 0 ? openaiInput.value : null
-
-			setIsGenerating(true)
-			setProgress('Preparing image...')
+			// Show initial toast
+			addToast({
+				title: 'Preparing image...',
+				description: 'Getting ready to generate animation',
+			})
 
 			const imageShape = props.selectedShapes[0] as TLImageShape
 			const assetId = imageShape.props?.assetId
@@ -166,7 +146,7 @@ export function SingleImageTool(props: SingleImageToolProps) {
 					title: 'No image found',
 					description: 'Image shape has no assetId',
 				})
-				setIsGenerating(false)
+				setIsAnimationGenerating(false)
 				return
 			}
 
@@ -177,7 +157,7 @@ export function SingleImageTool(props: SingleImageToolProps) {
 					title: 'No image found',
 					description: 'Could not find image asset',
 				})
-				setIsGenerating(false)
+				setIsAnimationGenerating(false)
 				return
 			}
 
@@ -188,11 +168,15 @@ export function SingleImageTool(props: SingleImageToolProps) {
 					title: 'No image found',
 					description: 'Image has no source URL',
 				})
-				setIsGenerating(false)
+				setIsAnimationGenerating(false)
 				return
 			}
 
-			setProgress('Generating animation with Sora 2 (this may take 1-2 minutes)...')
+			// Show generation toast
+			addToast({
+				title: 'Generating animation with Sora 2',
+				description: 'This may take 1-2 minutes. Feel free to continue working!',
+			})
 
 			const response = await fetch('/api/generate-animation', {
 				method: 'POST',
@@ -202,11 +186,8 @@ export function SingleImageTool(props: SingleImageToolProps) {
 				body: JSON.stringify({
 					imageUrl,
 					prompt: animationPrompt,
-					duration: '4',
-					aspectRatio: 'auto',
+					duration: 4,
 					resolution: 'auto',
-					falApiKey,
-					openaiApiKey: userOpenaiApiKey,
 				}),
 			})
 
@@ -218,18 +199,24 @@ export function SingleImageTool(props: SingleImageToolProps) {
 					title: 'Animation failed',
 					description: result.error || 'Unknown error',
 				})
-				setIsGenerating(false)
+				setIsAnimationGenerating(false)
 				return
 			}
 
-			setProgress('Done!')
-			setGeneratedVideoUrl(result.videoUrl)
+			// Show placing toast
+			addToast({
+				title: 'Placing video on canvas...',
+				description: 'Almost done!',
+			})
 
-			setIsGenerating(false)
+			// Place the video on the canvas (reusing imageShape from above)
+			await placeVideoOnCanvas(editor, result.videoUrl, imageShape)
+
+			setIsAnimationGenerating(false)
 			addToast({
 				icon: 'check',
 				title: 'Animation ready!',
-				description: 'Video generated with Sora 2',
+				description: 'Video generated and placed on canvas',
 			})
 		} catch (error: any) {
 			console.error('Error generating animation:', error)
@@ -238,8 +225,7 @@ export function SingleImageTool(props: SingleImageToolProps) {
 				title: 'Something went wrong',
 				description: error.message.slice(0, 100),
 			})
-			setIsGenerating(false)
-			setProgress('')
+			setIsAnimationGenerating(false)
 		}
 	}, [editor, props.selectedShapes, addToast, animationPrompt])
 
@@ -248,7 +234,6 @@ export function SingleImageTool(props: SingleImageToolProps) {
 			setActiveMode('none')
 		} else {
 			setActiveMode('variants')
-			setGeneratedVideoUrl(null)
 		}
 	}
 
@@ -265,14 +250,14 @@ export function SingleImageTool(props: SingleImageToolProps) {
 			<div className="action-buttons-container">
 				<button
 					onClick={handleVariantsClick}
-					disabled={isGenerating}
+					disabled={isGenerating || isAnimationGenerating}
 					className={`action-button ${activeMode === 'variants' ? 'active' : ''}`}
 				>
 					✨ Generate Variants
 				</button>
 				<button
 					onClick={handleAnimationClick}
-					disabled={isGenerating}
+					disabled={isGenerating || isAnimationGenerating}
 					className={`action-button ${activeMode === 'animation' ? 'active' : ''}`}
 				>
 					🎬 Generate Animation
@@ -290,14 +275,14 @@ export function SingleImageTool(props: SingleImageToolProps) {
 									value={variant.prompt}
 									onChange={(e) => updateVariantPrompt(variant.id, e.target.value)}
 									placeholder="e.g., wearing a hat, different pose, smiling..."
-									disabled={isGenerating}
+									disabled={isGenerating || isAnimationGenerating}
 									className="variant-prompt-input"
 									maxLength={100}
 								/>
 								{variants.length > 1 && (
 									<button
 										onClick={() => removeVariant(variant.id)}
-										disabled={isGenerating}
+										disabled={isGenerating || isAnimationGenerating}
 										className="remove-variant-button"
 										title="Remove variant"
 									>
@@ -311,14 +296,14 @@ export function SingleImageTool(props: SingleImageToolProps) {
 					<div className="variants-actions">
 						<button
 							onClick={addVariant}
-							disabled={isGenerating || variants.length >= MAX_VARIANTS}
+							disabled={isGenerating || isAnimationGenerating || variants.length >= MAX_VARIANTS}
 							className="add-variant-button"
 						>
 							+ Add Variant
 						</button>
 						<button
 							onClick={handleGenerateVariants}
-							disabled={isGenerating}
+							disabled={isGenerating || isAnimationGenerating}
 							className="generate-button"
 						>
 							✨ Generate Variant{variants.length > 1 ? 's' : ''}
@@ -338,14 +323,14 @@ export function SingleImageTool(props: SingleImageToolProps) {
 							value={animationPrompt}
 							onChange={(e) => setAnimationPrompt(e.target.value)}
 							placeholder="Describe the animation style..."
-							disabled={isGenerating}
+							disabled={isGenerating || isAnimationGenerating}
 							className="animation-prompt-input"
 							maxLength={200}
 						/>
 					</div>
 					<button
 						onClick={handleGenerateAnimation}
-						disabled={isGenerating}
+						disabled={isGenerating || isAnimationGenerating}
 						className="create-animation-button"
 					>
 						🎬 Create Animation with Sora 2
@@ -354,15 +339,6 @@ export function SingleImageTool(props: SingleImageToolProps) {
 			)}
 
 			{isGenerating && <LoadingIndicator message={progress} />}
-
-			{generatedVideoUrl && !isGenerating && activeMode === 'animation' && (
-				<div className="video-result">
-					<video src={generatedVideoUrl} controls width={300} />
-					<a href={generatedVideoUrl} download="animation.mp4" className="download-button">
-						📥 Download Animation
-					</a>
-				</div>
-			)}
 		</div>
 	)
 }

@@ -55,18 +55,6 @@ export function ImageVariantsTool(props: ImageVariantsToolProps) {
 
 	const handleGenerate = useCallback(async () => {
 		try {
-			// Get API key
-			const input = document.getElementById('fal_key_input') as HTMLInputElement
-			const apiKey = input?.value ?? null
-			if (!apiKey) {
-				addToast({
-					icon: 'warning-triangle',
-					title: 'API Key Required',
-					description: 'Please enter your fal.ai API key',
-				})
-				return
-			}
-
 			// Validate at least one variant has a prompt
 			const validVariants = variants.filter((v) => v.prompt.trim() !== '')
 			if (validVariants.length === 0) {
@@ -96,7 +84,6 @@ export function ImageVariantsTool(props: ImageVariantsToolProps) {
 				body: JSON.stringify({
 					imageBase64,
 					variants: validVariants.map((v) => ({ prompt: v.prompt })),
-					apiKey,
 				}),
 			})
 

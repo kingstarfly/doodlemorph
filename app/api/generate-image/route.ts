@@ -2,13 +2,12 @@ import { fal } from '@fal-ai/client'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 
-const FAL_KEY = process.env.FAL_KEY
+const FAL_API_KEY = process.env.FAL_API_KEY
 
 // Define request schema with Zod
 const GenerateImageSchema = z.object({
 	imageBase64: z.string().min(1, 'Image data is required'),
 	prompt: z.string().min(1, 'Prompt is required').max(500),
-	apiKey: z.string().optional(),
 })
 
 export async function POST(request: NextRequest) {
@@ -28,18 +27,17 @@ export async function POST(request: NextRequest) {
 			)
 		}
 
-		const { imageBase64, prompt, apiKey } = validation.data
+		const { imageBase64, prompt } = validation.data
 
-		// Use FAL key (prefer user-submitted over environment variable)
-		const finalApiKey = apiKey ?? FAL_KEY
-		if (!finalApiKey) {
+		// Check for FAL API key in environment variables
+		if (!FAL_API_KEY) {
 			return NextResponse.json(
-				{ success: false, error: 'FAL API key is required' },
-				{ status: 400 }
+				{ success: false, error: 'FAL API key is not configured on the server' },
+				{ status: 500 }
 			)
 		}
 		// Configure fal.ai client
-		fal.config({ credentials: finalApiKey })
+		fal.config({ credentials: FAL_API_KEY })
 
 		// Convert base64 to data URI for fal.ai
 		// The client will auto-upload the file for us

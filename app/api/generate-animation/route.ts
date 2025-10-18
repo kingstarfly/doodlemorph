@@ -2,20 +2,24 @@ import { fal } from '@fal-ai/client'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY
+const FAL_API_KEY = process.env.FAL_API_KEY
 
 // Define request schema with Zod
+// Constant prompt suffix to ensure consistent quality and framing
+const QUALITY_PROMPT_SUFFIX =
+	', keep full character visible in frame, never crop or cut off the character, maintain proper spacing around character, add background space if needed, smooth animation sequence, consistent style, natural motion'
+
 const GenerateAnimationSchema = z.object({
 	imageUrl: z.string().url('Must be a valid URL'),
-	prompt: z
-		.string()
-		.min(1)
-		.max(500)
-		.default('smooth animation sequence, character movement, consistent style, natural motion'),
-	duration: z.enum(['4', '8', '12']).default('4'),
-	aspectRatio: z.enum(['auto', '9:16', '16:9']).default('auto'),
+	prompt: z.string().min(1).max(500).default('character movement'),
+	duration: z.coerce
+		.number()
+		.int()
+		.refine((val) => [4, 8, 12].includes(val), {
+			message: 'Duration must be 4, 8, or 12 seconds',
+		})
+		.default(4),
 	resolution: z.enum(['auto', '720p']).default('auto'),
-	openaiApiKey: z.string().nullable(),
 })
 
 export async function POST(request: NextRequest) {
@@ -36,27 +40,29 @@ export async function POST(request: NextRequest) {
 		}
 		console.log('Validation data:', validation.data)
 
-		const { imageUrl, prompt, duration, aspectRatio, resolution, openaiApiKey } = validation.data
+		const { imageUrl, prompt, duration, resolution } = validation.data
 
-		// ONLY use OpenAI key (prefer user-submitted over environment variable)
-		const finalOpenaiApiKey = openaiApiKey ?? OPENAI_API_KEY
-		if (!finalOpenaiApiKey) {
+		// Check for FAL API key in environment variables
+		if (!FAL_API_KEY) {
 			return NextResponse.json(
-				{ success: false, error: 'OpenAI API key is required for Sora 2 animation' },
-				{ status: 400 }
+				{ success: false, error: 'FAL API key is not configured on the server' },
+				{ status: 500 }
 			)
 		}
 
-		// Configure fal.ai client with OpenAI key
-		fal.config({ credentials: finalOpenaiApiKey })
+		// Configure fal.ai client with FAL key
+		fal.config({ credentials: FAL_API_KEY })
+
+		// Combine user prompt with quality suffix
+		const finalPrompt = prompt + QUALITY_PROMPT_SUFFIX
 
 		// Call fal.ai Sora 2 model for image-to-video
 		const result = await fal.subscribe('fal-ai/sora-2/image-to-video', {
 			input: {
-				prompt: prompt,
+				prompt: finalPrompt,
 				image_url: imageUrl,
-				duration: duration,
-				aspect_ratio: aspectRatio,
+				duration: duration as any, // API expects number but types say string
+				aspect_ratio: '16:9',
 				resolution: resolution,
 			},
 			logs: true,
@@ -82,6 +88,7 @@ export async function POST(request: NextRequest) {
 		})
 	} catch (error: any) {
 		console.error('Error generating animation with Sora 2:', error)
+		console.error('Error details:', JSON.stringify(error, null, 2))
 		return NextResponse.json(
 			{
 				success: false,

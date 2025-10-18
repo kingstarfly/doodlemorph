@@ -24,18 +24,6 @@ export function DoodleToImageTool(props: DoodleToImageToolProps) {
 
 	const handleGenerate = useCallback(async () => {
 		try {
-			// Get API key
-			const input = document.getElementById('fal_key_input') as HTMLInputElement
-			const apiKey = input?.value ?? null
-			if (!apiKey) {
-				addToast({
-					icon: 'warning-triangle',
-					title: 'API Key Required',
-					description: 'Please enter your fal.ai API key',
-				})
-				return
-			}
-
 			setIsGenerating(true)
 			setProgress('Capturing drawing...')
 
@@ -53,7 +41,6 @@ export function DoodleToImageTool(props: DoodleToImageToolProps) {
 				body: JSON.stringify({
 					imageBase64,
 					prompt: stylePrompt || 'high quality character art',
-					apiKey,
 				}),
 			})
 

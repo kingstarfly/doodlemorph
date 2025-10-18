@@ -2,7 +2,7 @@ import { fal } from '@fal-ai/client'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 
-const FAL_KEY = process.env.FAL_KEY
+const FAL_API_KEY = process.env.FAL_API_KEY
 
 // Define schemas with Zod
 const VariantSchema = z.object({
@@ -12,7 +12,6 @@ const VariantSchema = z.object({
 const GenerateVariantsSchema = z.object({
 	imageBase64: z.string().min(1, 'Image data is required'),
 	variants: z.array(VariantSchema).min(1, 'At least one variant is required').max(6),
-	apiKey: z.string().optional(),
 })
 
 export async function POST(request: NextRequest) {
@@ -32,19 +31,18 @@ export async function POST(request: NextRequest) {
 			)
 		}
 
-		const { imageBase64, variants, apiKey } = validation.data
+		const { imageBase64, variants } = validation.data
 
-		// Use FAL key (prefer user-submitted over environment variable)
-		const finalApiKey = apiKey ?? FAL_KEY
-		if (!finalApiKey) {
+		// Check for FAL API key in environment variables
+		if (!FAL_API_KEY) {
 			return NextResponse.json(
-				{ success: false, error: 'FAL API key is required' },
-				{ status: 400 }
+				{ success: false, error: 'FAL API key is not configured on the server' },
+				{ status: 500 }
 			)
 		}
 
 		// Configure fal.ai client
-		fal.config({ credentials: finalApiKey })
+		fal.config({ credentials: FAL_API_KEY })
 
 		// Convert base64 to data URI for fal.ai
 		const dataUri = imageBase64.startsWith('data:')
