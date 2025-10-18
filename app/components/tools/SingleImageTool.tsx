@@ -30,6 +30,7 @@ export function SingleImageTool(props: SingleImageToolProps) {
 		'smooth animation sequence, character movement, consistent style, natural motion'
 	)
 	const [generateAudio, setGenerateAudio] = useState(false)
+	const [generatingRandomFor, setGeneratingRandomFor] = useState<string | null>(null)
 
 	const addVariant = useCallback(() => {
 		if (variants.length >= MAX_VARIANTS) {
@@ -59,6 +60,39 @@ export function SingleImageTool(props: SingleImageToolProps) {
 			setVariants(variants.map((v) => (v.id === id ? { ...v, prompt } : v)))
 		},
 		[variants]
+	)
+
+	const generateRandomPrompt = useCallback(
+		async (id: string) => {
+			try {
+				setGeneratingRandomFor(id)
+				const response = await fetch('/api/generate-random-prompt', {
+					method: 'POST',
+				})
+
+				const result = await response.json()
+
+				if (result.success && result.prompt) {
+					updateVariantPrompt(id, result.prompt)
+				} else {
+					addToast({
+						icon: 'warning-triangle',
+						title: 'Generation failed',
+						description: result.error || 'Could not generate prompt',
+					})
+				}
+			} catch (error: any) {
+				console.error('Error generating random prompt:', error)
+				addToast({
+					icon: 'warning-triangle',
+					title: 'Something went wrong',
+					description: 'Failed to generate random prompt',
+				})
+			} finally {
+				setGeneratingRandomFor(null)
+			}
+		},
+		[updateVariantPrompt, addToast]
 	)
 
 	const handleGenerateVariants = useCallback(async () => {
@@ -280,6 +314,14 @@ export function SingleImageTool(props: SingleImageToolProps) {
 									className="variant-prompt-input"
 									maxLength={100}
 								/>
+								<button
+									onClick={() => generateRandomPrompt(variant.id)}
+									disabled={isGenerating || isAnimationGenerating || generatingRandomFor !== null}
+									className="random-prompt-button"
+									title="Generate random prompt"
+								>
+									{generatingRandomFor === variant.id ? '⏳' : '🎲'}
+								</button>
 								{variants.length > 1 && (
 									<button
 										onClick={() => removeVariant(variant.id)}

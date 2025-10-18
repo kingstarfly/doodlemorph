@@ -246,6 +246,33 @@
 	cursor: not-allowed;
 }
 
+.random-prompt-button {
+	padding: var(--space-1) var(--space-2);
+	border-radius: var(--radius-2);
+	border: 1px solid var(--color-muted-1);
+	background: var(--color-background);
+	color: var(--color-text-3);
+	font-size: 16px;
+	font-family: inherit;
+	cursor: pointer;
+	line-height: 1;
+	width: 28px;
+	height: 28px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.random-prompt-button:hover:not(:disabled) {
+	background: var(--color-muted-2);
+	color: var(--color-text);
+}
+
+.random-prompt-button:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
 .remove-variant-button {
 	padding: var(--space-1) var(--space-2);
 	border-radius: var(--radius-2);
