@@ -186,8 +186,6 @@ export function SingleImageTool(props: SingleImageToolProps) {
 				body: JSON.stringify({
 					imageUrl,
 					prompt: animationPrompt,
-					duration: 4,
-					resolution: 'auto',
 				}),
 			})
 
