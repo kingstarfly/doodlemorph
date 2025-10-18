@@ -21,6 +21,7 @@ export function DoodleToImageTool(props: DoodleToImageToolProps) {
 	const [stylePrompt, setStylePrompt] = useState('')
 	const [isGenerating, setIsGenerating] = useState(false)
 	const [progress, setProgress] = useState('')
+	const [isEnhancing, setIsEnhancing] = useState(false)
 
 	const handleGenerate = useCallback(async () => {
 		try {
@@ -84,6 +85,56 @@ export function DoodleToImageTool(props: DoodleToImageToolProps) {
 		}
 	}, [editor, props.selectedShapes, stylePrompt, addToast])
 
+	const enhancePrompt = useCallback(async () => {
+		if (!stylePrompt.trim()) {
+			addToast({
+				icon: 'warning-triangle',
+				title: 'No prompt to enhance',
+				description: 'Please enter a prompt first',
+			})
+			return
+		}
+
+		try {
+			setIsEnhancing(true)
+			const response = await fetch('/api/enhance-prompt', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					userPrompt: stylePrompt,
+				}),
+			})
+
+			const result = await response.json()
+
+			if (result.success && result.enhancedPrompt) {
+				setStylePrompt(result.enhancedPrompt)
+				addToast({
+					icon: 'check',
+					title: 'Prompt enhanced!',
+					description: 'Your prompt has been improved',
+				})
+			} else {
+				addToast({
+					icon: 'warning-triangle',
+					title: 'Enhancement failed',
+					description: result.error || 'Could not enhance prompt',
+				})
+			}
+		} catch (error: any) {
+			console.error('Error enhancing prompt:', error)
+			addToast({
+				icon: 'warning-triangle',
+				title: 'Something went wrong',
+				description: 'Failed to enhance prompt',
+			})
+		} finally {
+			setIsEnhancing(false)
+		}
+	}, [stylePrompt, addToast])
+
 	return (
 		<div className="doodle-to-image-tool">
 			<div className="prompt-input-row">
@@ -91,12 +142,24 @@ export function DoodleToImageTool(props: DoodleToImageToolProps) {
 					type="text"
 					value={stylePrompt}
 					onChange={(e) => setStylePrompt(e.target.value)}
-					maxLength={50}
+					maxLength={200}
 					placeholder="e.g., cartoon style, pixel art, 3D render..."
-					disabled={isGenerating}
+					disabled={isGenerating || isEnhancing}
 					className="style-prompt-input"
 				/>
-				<button onClick={handleGenerate} disabled={isGenerating} className="generate-button">
+				<button
+					onClick={enhancePrompt}
+					disabled={isGenerating || isEnhancing}
+					className="main-enhance-button"
+					title="Enhance prompt with AI"
+				>
+					{isEnhancing ? '⏳' : '✧'}
+				</button>
+				<button
+					onClick={handleGenerate}
+					disabled={isGenerating || isEnhancing}
+					className="generate-button"
+				>
 					✨ Generate Image
 				</button>
 			</div>

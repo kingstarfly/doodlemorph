@@ -18,7 +18,7 @@
 	display: flex;
 	flex-direction: column;
 	gap: var(--space-2);
-	min-width: 400px;
+	min-width: 500px;
 }
 
 .prompt-input-row {
@@ -29,13 +29,15 @@
 
 .style-prompt-input {
 	flex: 1;
-	padding: var(--space-2) var(--space-3);
+	padding: var(--space-3) var(--space-4);
 	border-radius: var(--radius-2);
 	border: 1px solid var(--color-muted-1);
 	background: var(--color-background);
 	color: var(--color-text);
-	font-size: 14px;
+	font-size: 15px;
 	font-family: inherit;
+	min-height: 40px;
+	min-width: 300px;
 }
 
 .style-prompt-input:focus {
@@ -66,6 +68,37 @@
 }
 
 .generate-button:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.main-enhance-button {
+	padding: var(--space-2);
+	border-radius: var(--radius-2);
+	border: 1px solid var(--color-muted-1);
+	background: var(--color-background);
+	color: #000000;
+	font-size: 22px;
+	font-weight: bold;
+	font-family: inherit;
+	cursor: pointer;
+	white-space: nowrap;
+	min-width: 48px;
+	min-height: 40px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.2s ease;
+}
+
+.main-enhance-button:hover:not(:disabled) {
+	background: var(--color-muted-2);
+	color: #000000;
+	transform: scale(1.1);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.main-enhance-button:disabled {
 	opacity: 0.5;
 	cursor: not-allowed;
 }
@@ -269,6 +302,58 @@
 }
 
 .random-prompt-button:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.enhance-prompt-button {
+	padding: var(--space-1) var(--space-2);
+	border-radius: var(--radius-2);
+	border: 1px solid var(--color-muted-1);
+	background: var(--color-background);
+	color: var(--color-text-3);
+	font-size: 14px;
+	font-family: inherit;
+	cursor: pointer;
+	white-space: nowrap;
+	min-width: 32px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.enhance-prompt-button:hover:not(:disabled) {
+	background: var(--color-muted-2);
+	color: var(--color-text);
+}
+
+.enhance-prompt-button:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.enhance-animation-prompt-button {
+	padding: var(--space-1) var(--space-2);
+	border-radius: var(--radius-2);
+	border: 1px solid var(--color-muted-1);
+	background: var(--color-background);
+	color: var(--color-text-3);
+	font-size: 14px;
+	font-family: inherit;
+	cursor: pointer;
+	white-space: nowrap;
+	min-width: 32px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.enhance-animation-prompt-button:hover:not(:disabled) {
+	background: var(--color-muted-2);
+	color: var(--color-text);
+}
+
+.enhance-animation-prompt-button:disabled {
 	opacity: 0.5;
 	cursor: not-allowed;
 }

@@ -31,6 +31,8 @@ export function SingleImageTool(props: SingleImageToolProps) {
 	)
 	const [generateAudio, setGenerateAudio] = useState(false)
 	const [generatingRandomFor, setGeneratingRandomFor] = useState<string | null>(null)
+	const [enhancingPromptFor, setEnhancingPromptFor] = useState<string | null>(null)
+	const [enhancingAnimationPrompt, setEnhancingAnimationPrompt] = useState(false)
 
 	const addVariant = useCallback(() => {
 		if (variants.length >= MAX_VARIANTS) {
@@ -94,6 +96,109 @@ export function SingleImageTool(props: SingleImageToolProps) {
 		},
 		[updateVariantPrompt, addToast]
 	)
+
+	const enhancePrompt = useCallback(
+		async (id: string, currentPrompt: string) => {
+			if (!currentPrompt.trim()) {
+				addToast({
+					icon: 'warning-triangle',
+					title: 'No prompt to enhance',
+					description: 'Please enter a prompt first',
+				})
+				return
+			}
+
+			try {
+				setEnhancingPromptFor(id)
+				const response = await fetch('/api/enhance-prompt', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({
+						userPrompt: currentPrompt,
+					}),
+				})
+
+				const result = await response.json()
+
+				if (result.success && result.enhancedPrompt) {
+					updateVariantPrompt(id, result.enhancedPrompt)
+					addToast({
+						icon: 'check',
+						title: 'Prompt enhanced!',
+						description: 'Your prompt has been improved',
+					})
+				} else {
+					addToast({
+						icon: 'warning-triangle',
+						title: 'Enhancement failed',
+						description: result.error || 'Could not enhance prompt',
+					})
+				}
+			} catch (error: any) {
+				console.error('Error enhancing prompt:', error)
+				addToast({
+					icon: 'warning-triangle',
+					title: 'Something went wrong',
+					description: 'Failed to enhance prompt',
+				})
+			} finally {
+				setEnhancingPromptFor(null)
+			}
+		},
+		[updateVariantPrompt, addToast]
+	)
+
+	const enhanceAnimationPrompt = useCallback(async () => {
+		if (!animationPrompt.trim()) {
+			addToast({
+				icon: 'warning-triangle',
+				title: 'No prompt to enhance',
+				description: 'Please enter an animation prompt first',
+			})
+			return
+		}
+
+		try {
+			setEnhancingAnimationPrompt(true)
+			const response = await fetch('/api/enhance-prompt', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					userPrompt: animationPrompt,
+				}),
+			})
+
+			const result = await response.json()
+
+			if (result.success && result.enhancedPrompt) {
+				setAnimationPrompt(result.enhancedPrompt)
+				addToast({
+					icon: 'check',
+					title: 'Animation prompt enhanced!',
+					description: 'Your animation prompt has been improved',
+				})
+			} else {
+				addToast({
+					icon: 'warning-triangle',
+					title: 'Enhancement failed',
+					description: result.error || 'Could not enhance animation prompt',
+				})
+			}
+		} catch (error: any) {
+			console.error('Error enhancing animation prompt:', error)
+			addToast({
+				icon: 'warning-triangle',
+				title: 'Something went wrong',
+				description: 'Failed to enhance animation prompt',
+			})
+		} finally {
+			setEnhancingAnimationPrompt(false)
+		}
+	}, [animationPrompt, addToast])
 
 	const handleGenerateVariants = useCallback(async () => {
 		try {
@@ -316,11 +421,29 @@ export function SingleImageTool(props: SingleImageToolProps) {
 								/>
 								<button
 									onClick={() => generateRandomPrompt(variant.id)}
-									disabled={isGenerating || isAnimationGenerating || generatingRandomFor !== null}
+									disabled={
+										isGenerating ||
+										isAnimationGenerating ||
+										generatingRandomFor !== null ||
+										enhancingPromptFor !== null
+									}
 									className="random-prompt-button"
 									title="Generate random prompt"
 								>
 									{generatingRandomFor === variant.id ? '⏳' : '🎲'}
+								</button>
+								<button
+									onClick={() => enhancePrompt(variant.id, variant.prompt)}
+									disabled={
+										isGenerating ||
+										isAnimationGenerating ||
+										generatingRandomFor !== null ||
+										enhancingPromptFor !== null
+									}
+									className="enhance-prompt-button"
+									title="Enhance prompt with AI"
+								>
+									{enhancingPromptFor === variant.id ? '⏳' : '✨'}
 								</button>
 								{variants.length > 1 && (
 									<button
@@ -366,10 +489,18 @@ export function SingleImageTool(props: SingleImageToolProps) {
 							value={animationPrompt}
 							onChange={(e) => setAnimationPrompt(e.target.value)}
 							placeholder="Describe the animation style..."
-							disabled={isGenerating || isAnimationGenerating}
+							disabled={isGenerating || isAnimationGenerating || enhancingAnimationPrompt}
 							className="animation-prompt-input"
 							maxLength={200}
 						/>
+						<button
+							onClick={enhanceAnimationPrompt}
+							disabled={isGenerating || isAnimationGenerating || enhancingAnimationPrompt}
+							className="enhance-animation-prompt-button"
+							title="Enhance animation prompt with AI"
+						>
+							{enhancingAnimationPrompt ? '⏳' : '✨'}
+						</button>
 					</div>
 					<div className="animation-options">
 						<label className="audio-checkbox-label">
