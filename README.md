@@ -1,180 +1,166 @@
-# Doodle Animator
+# 🎨 DoodleMorph
 
-Transform tldraw canvas into an AI-powered animation studio. Users can draw sketches, generate styled images using AI, and create animations from image sequences.
+Transform your sketches into stunning AI-generated images and bring them to life with cinematic animations—all on an infinite canvas.
 
-## Features
+<div align="center">
 
-### 🎨 Doodle to Image Generation
+**Built for Cursor Hackathon Singapore 2025**
 
-- Draw sketches on the canvas using tldraw's drawing tools
-- Select your drawing and a contextual toolbar appears
-- Choose from quick style presets (Cartoon, Pixel Art, 3D Render, Sticker) or write custom prompts
-- AI generates a styled, high-quality image based on your sketch
+![TLDraw](https://img.shields.io/badge/TLDraw-v3.14.2-blue)
+![Next.js](https://img.shields.io/badge/Next.js-14-black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
 
-### 🎬 Image to Animation with Sora 2
+</div>
 
-- Generate a styled image of your character
-- Select any image to bring it to life with OpenAI's Sora 2
-- AI generates a smooth, cinematic video animation from a single image
-- Download the final animation as MP4
+---
 
-## Getting Started
+## ✨ What is DoodleMorph?
 
-### Prerequisites
+DoodleMorph is an AI-powered creative studio built on top of TLDraw's infinite canvas. Draw a simple sketch, and watch as AI transforms it into professional artwork with just a few clicks. Then, select your generated images to create smooth, cinematic animations using cutting-edge video generation models.
 
-- Node.js 18+ installed
-- A fal.ai API key (required - get one at [fal.ai/dashboard/keys](https://fal.ai/dashboard/keys))
-- An OpenAI API key with Sora access (optional - for Sora 2 animations using your OpenAI credits)
+### Key Features
 
-### Installation
+- **🎨 Sketch-to-Image Generation**: Draw anything and instantly transform it into high-quality images with custom style prompts
+- **🎬 Image-to-Video Animation**: Select multiple generated images and create smooth animations with Veo 3.1
+- **🖼️ Quick Style Presets**: One-click styles like Cartoon, Pixel Art, 3D Render, and Sticker
+- **🎯 Contextual Tools**: Smart toolbar that adapts based on what you select on the canvas
+- **📥 Export Everything**: Download your generated images and animations as high-quality files
 
-1. Clone the repository:
+---
 
-```bash
-git clone <repository-url>
-cd ai-canvas-character-creator
-```
+## 🏆 Hackathon & Sponsors
 
-2. Install dependencies:
+This project was built for the **Cursor Hackathon Singapore 2025** and is powered by incredible AI technologies from our sponsors:
 
-```bash
-npm install
-```
+### Official Sponsors
 
-3. Run the development server:
+- **[Fal.AI](https://fal.ai)** - Lightning-fast AI model hosting and inference for image generation
+- **[Gemini API](https://ai.google.dev/gemini-api)** - Google's powerful AI capabilities for intelligent prompt enhancement
+- **[Veo 3.1](https://deepmind.google/technologies/veo/)** - Google DeepMind's state-of-the-art video generation model
+- **[Groq](https://groq.com)** - Ultra-fast AI inference with Llama 3.3 70B (GPT-OSS-20B) for prompt generation
 
-```bash
-npm run dev
-```
+---
 
-4. Enter your API keys in the app:
-   - **FAL API Key** (Required): Used for image generation and video processing
-   - **OpenAI API Key** (Optional): If you have Sora API access, this uses your OpenAI credits instead of fal.ai billing
+## 🛠️ Tech Stack
 
-Alternatively, you can create a `.env.local` file with your keys (though the UI input is recommended):
+### Core Framework
 
-```bash
-NEXT_PUBLIC_FAL_KEY=your-fal-api-key-here
-NEXT_PUBLIC_OPENAI_KEY=your-openai-api-key-here
-```
+- **[Next.js 14](https://nextjs.org)** - React framework with App Router and API routes
+- **[TLDraw v3](https://tldraw.dev)** - Infinite canvas SDK powering the drawing interface
+- **[React 18](https://react.dev)** - UI component library
+- **[TypeScript 5](https://www.typescriptlang.org)** - Type-safe development
 
-5. Open [http://localhost:3000](http://localhost:3000) in your browser
+### AI & Machine Learning
 
-## How to Use
+- **[Fal.AI Client](https://fal.ai)** - AI model inference and hosting
+  - Flux-Dev: High-quality image generation
+  - Kling Video: Advanced video synthesis
+- **[Groq AI SDK](https://groq.com)** - Fast LLM inference with Llama 3.3 70B
+- **[Vercel AI SDK](https://sdk.vercel.ai)** - Unified AI SDK for model integration
+- **Google Gemini API** - Prompt enhancement and refinement
+- **Veo 3.1** - Cinematic video generation from images
 
-### Creating Styled Images
+### Development Tools
 
-1. Use tldraw's drawing tools to sketch a character or object
-2. Select your drawing (click or drag to select)
-3. A contextual toolbar will appear at the bottom
-4. Choose a quick style preset or type a custom prompt (max 50 characters)
-5. Click "✨ Generate Image"
-6. Wait for the AI to generate your styled image
-7. The image will appear on the canvas next to your drawing
+- **[Zod](https://zod.dev)** - TypeScript-first schema validation
+- **ESLint** - Code quality and consistency
 
-### Creating Animations with Sora 2
+---
 
-1. Generate a styled image using the process above, or use any existing image on the canvas
-2. Select a single image (click to select)
-3. The animation toolbar will appear with Sora 2 info
-4. Click "🎬 Create Animation with Sora 2"
-5. Wait 1-2 minutes for Sora 2 to generate your cinematic video
-6. Preview the animation in the toolbar
-7. Click "📥 Download Animation" to save the MP4 file
+1. **Clone the repository**
 
-**Note**: Sora 2 animates a single image and creates natural, cinematic motion. If you have an OpenAI API key with Sora access, it will use your OpenAI credits. Otherwise, fal.ai will handle the billing.
+   ```bash
+   git clone <repository-url>
+   cd ai-canvas-character-creator
+   ```
 
-## Tech Stack
+2. **Install dependencies**
 
-- **Frontend**: Next.js 14, React, TypeScript
-- **Canvas**: tldraw v3
-- **AI**: fal.ai (flux-dev for image generation, Sora 2 for animations)
+   ```bash
+   npm install
+   ```
 
-## Project Structure
+3. **Run the development server**
 
-```
-app/
-├── api/
-│   ├── generate-image/route.ts      # Image generation API
-│   └── generate-animation/route.ts  # Animation generation API
-├── components/
-│   ├── tools/
-│   │   ├── DoodleToImageTool.tsx    # Doodle → Image UI
-│   │   ├── ImageToAnimationTool.tsx # Images → Animation UI
-│   │   └── tools.css                # Toolbar styling
-│   ├── ToolbarContainer.tsx         # Main toolbar orchestrator
-│   ├── LoadingIndicator.tsx         # Loading spinner component
-│   └── RiskyButCoolAPIKeyInput.tsx  # API key input
-├── lib/
-│   ├── detectSelectionType.ts       # Selection analyzer
-│   ├── captureShapesAsImage.ts      # Canvas export utility
-│   ├── placeImageOnCanvas.ts        # Image placement utility
-│   └── blobToBase64.ts              # Blob conversion
-└── page.tsx                         # Main app entry
-```
+   ```bash
+   npm run dev
+   ```
 
-## API Models Used
+4. **Open the app**
 
-- **Image Generation**: `fal-ai/flux/dev` - Generates high-quality styled images from sketches
-- **Video Animation**: `fal-ai/kling-video/v1/standard/image-to-video` - Creates smooth animations from image sequences
+   Navigate to [http://localhost:3000](http://localhost:3000) in your browser
 
-## Development Notes
+5. **Enter your API keys**
 
-### Selection Detection
+   When you first open the app, you'll be prompted to enter:
 
-The app uses a smart selection detection system that shows different tools based on what's selected:
+   - **FAL API Key** (Required): Used for AI image and video generation
+   - **OpenAI API Key** (Optional): For Sora 2 animations using your OpenAI credits
 
-- **Drawings selected** (draw, geo, arrow shapes) → Show Doodle to Image tool
-- **2+ images selected** → Show Animation tool
-- **1 image selected** → (Reserved for future "Make it Talk" feature)
-- **Nothing/mixed selection** → Hide toolbar
+   Alternatively, create a `.env.local` file:
 
-### Error Handling
+   ```bash
+   NEXT_PUBLIC_FAL_KEY=your-fal-api-key-here
+   NEXT_PUBLIC_OPENAI_KEY=your-openai-api-key-here
+   ```
 
-All API calls include comprehensive error handling:
+---
 
-- API key validation before making requests
-- User-friendly toast notifications for errors
-- Console logging for debugging
-- Timeout handling for long-running operations
+## 📖 How to Use
 
-## Troubleshooting
+### Creating Styled Images from Sketches
 
-### "API Key Required" error
+1. **Draw** - Use TLDraw's drawing tools to sketch a character, object, or scene
+2. **Select** - Click or drag to select your drawing
+3. **Style** - A toolbar appears at the bottom. Choose a quick preset (🎨 Cartoon, 🎮 Pixel Art, 🌟 3D Render) or type a custom prompt (max 50 characters)
+4. **Generate** - Click "✨ Generate Image" and wait ~10 seconds
+5. **Enjoy** - Your AI-generated image appears on the canvas!
 
-Make sure you've entered your fal.ai API key in either:
+### Creating Animations from Images
 
-- The `.env.local` file as `NEXT_PUBLIC_FAL_KEY`
-- The input field at the bottom of the app
+1. **Generate or Import** - Create styled images using the process above, or use existing images
+2. **Select Multiple** - Select 2 or more images on the canvas (hold Shift to multi-select)
+3. **Animate** - The animation toolbar appears. Click "🎬 Create Animation with Veo"
+4. **Wait** - Video generation takes 1-2 minutes for cinematic quality
+5. **Download** - Preview your animation and click "📥 Download Animation" to save as MP4
 
-### Image generation fails
+**Pro Tip**: The order you select images determines the animation sequence!
 
-- Check that your fal.ai API key is valid
-- Ensure you have sufficient credits in your fal.ai account
-- Try a simpler prompt if the generation times out
+---
 
-### Animation generation takes too long
+## 🎥 Demo & Screenshots
 
-- Video generation typically takes 30-60 seconds
-- Make sure you have a stable internet connection
-- If it times out, try with fewer images or simpler images
+Live site: [https://doodlemorph.vercel.app/](https://doodlemorph.vercel.app/)
+YouTube demo video: [https://youtu.be/BiEwaw66fSg](https://youtu.be/BiEwaw66fSg)
 
-## Future Enhancements
+---
 
-- **Talking Characters**: Add text-to-speech and lip-sync animation
-- **Asset Gallery**: History panel to browse previously generated assets
-- **Advanced Prompts**: More detailed prompt templates and controls
-- **Export Options**: Multiple video formats and resolutions
-- **Collaborative Features**: Share and remix animations
+## 👥 Team
 
-## License
+Built with ❤️ by:
 
-See LICENSE file for details.
+- **Xingxiang**
+- **Akilesh**
+- **Aldric**
 
-## Credits
+---
 
-Built with:
+## 🙏 Acknowledgments
 
-- [tldraw](https://tldraw.dev) - Infinite canvas SDK
-- [fal.ai](https://fal.ai) - AI model hosting
-- [Next.js](https://nextjs.org) - React framework
+Special thanks to:
+
+- **Cursor Hackathon Singapore 2025** organizers for this incredible event
+- **Fal.AI**, **Google (Gemini & Veo)**, and **Groq** for providing cutting-edge AI technologies
+- **TLDraw team** for the amazing canvas SDK
+- **Vercel** for seamless deployment and hosting
+- The open-source community for inspiration and tools
+
+---
+
+<div align="center">
+
+**[Try DoodleMorph Now](https://doodlemorph.vercel.app/)**
+
+Made with 🎨 at Cursor Hackathon Singapore 2025
+
+</div>
