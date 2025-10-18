@@ -44,7 +44,7 @@ export function OnboardingMessage() {
 					<span className="step-number">2.</span> Select assets
 				</div>
 				<div className="onboarding-step">
-					<span className="step-number">3.</span> Generate!
+					<span className="step-number">3.</span> Morph!
 				</div>
 			</div>
 		</div>
