@@ -125,7 +125,7 @@ export class PreviewShapeUtil extends BaseBoxShapeUtil<PreviewShape> {
 					}}
 					onPointerDown={stopEventPropagation}
 				>
-					<TldrawUiIcon icon="duplicate" />
+					<TldrawUiIcon icon="duplicate" label="Copy to clipboard" />
 				</div>
 				{htmlToUse && (
 					<div
