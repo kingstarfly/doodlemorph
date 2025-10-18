@@ -26,9 +26,7 @@ export function SingleImageTool(props: SingleImageToolProps) {
 	const [isGenerating, setIsGenerating] = useState(false)
 	const [progress, setProgress] = useState('')
 	const [isAnimationGenerating, setIsAnimationGenerating] = useState(false)
-	const [animationPrompt, setAnimationPrompt] = useState(
-		'smooth animation sequence, character movement, consistent style, natural motion'
-	)
+	const [animationPrompt, setAnimationPrompt] = useState('make it move about in a cute way')
 	const [generateAudio, setGenerateAudio] = useState(false)
 	const [generatingRandomFor, setGeneratingRandomFor] = useState<string | null>(null)
 	const [enhancingPromptFor, setEnhancingPromptFor] = useState<string | null>(null)
@@ -315,7 +313,7 @@ export function SingleImageTool(props: SingleImageToolProps) {
 
 			// Show generation toast
 			addToast({
-				title: 'Generating animation with Sora 2',
+				title: 'Generating animation',
 				description: 'This may take 1-2 minutes. Feel free to continue working!',
 			})
 
@@ -481,7 +479,7 @@ export function SingleImageTool(props: SingleImageToolProps) {
 			{activeMode === 'animation' && (
 				<div className="animation-section">
 					<div className="animation-info">
-						<p className="info-text">Create a smooth animation with Sora 2</p>
+						<p className="info-text">Create a smooth animation</p>
 					</div>
 					<div className="animation-prompt-row">
 						<input
@@ -519,7 +517,7 @@ export function SingleImageTool(props: SingleImageToolProps) {
 						disabled={isGenerating || isAnimationGenerating}
 						className="create-animation-button"
 					>
-						🎬 Create Animation with Sora 2
+						🎬 Create Animation
 					</button>
 				</div>
 			)}
