@@ -5,12 +5,12 @@ export function RiskyButCoolAPIKeyInput() {
 	const breakpoint = useBreakpoint()
 
 	const handleChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-		localStorage.setItem('makeitreal_key', e.target.value)
+		localStorage.setItem('doodle_animator_fal_key', e.target.value)
 	}, [])
 
 	const handleQuestionMessage = useCallback(() => {
 		window.alert(
-			`If you have an OpenAI developer key, you can put it in this input and it will be used when posting to OpenAI.\n\nSee https://platform.openai.com/api-keys to get a key.\n\nPutting API keys into boxes is generally a bad idea! If you have any concerns, create an API key and then revoke it after using this site.`
+			`If you have a fal.ai API key, you can put it in this input and it will be used for image and video generation.\n\nSee https://fal.ai/dashboard/keys to get a key.\n\nPutting API keys into boxes is generally a bad idea! If you have any concerns, create an API key and then revoke it after using this site.`
 		)
 	}, [])
 
@@ -19,9 +19,11 @@ export function RiskyButCoolAPIKeyInput() {
 			<div className="your-own-api-key__inner">
 				<div className="input__wrapper">
 					<input
-						id="openai_key_risky_but_cool"
+						id="fal_key_input"
 						defaultValue={
-							process.env.NEXT_PUBLIC_OPENAI_API_KEY ?? localStorage.getItem('makeitreal_key') ?? ''
+							process.env.NEXT_PUBLIC_FAL_KEY ??
+							localStorage.getItem('doodle_animator_fal_key') ??
+							''
 						}
 						onChange={handleChange}
 						spellCheck={false}

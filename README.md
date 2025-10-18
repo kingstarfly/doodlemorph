@@ -1,45 +1,174 @@
-# Make Real
+# Doodle Animator
 
-Use this repo as a template to create Make Real style apps like
-[makereal.tldraw.com](https://makereal.tldraw.com). To get started:
+Transform tldraw canvas into an AI-powered animation studio. Users can draw sketches, generate styled images using AI, and create animations from image sequences.
 
-1. Use the template and clone your new repo to your computer
-2. Run `npm install` to install dependencies
-3. Get an OpenAI API key from [platform.openai.com/api-keys](https://platform.openai.com/api-keys).
-4. Create a `.env.local` file that contains `NEXT_PUBLIC_OPENAI_API_KEY=your api key here`
-5. Run `npm run dev`
-6. Open [localhost:3000](http://localhost:3000) and make some stuff real!
+## Features
 
-## How it works
+### 🎨 Doodle to Image Generation
 
-Make Real is built with the [tldraw
-SDK](https://tldraw.dev/?utm_source=github&utm_medium=readme&utm_campaign=make-real), a very good
-React library for creating whiteboards and other infinite canvas experiences.
+- Draw sketches on the canvas using tldraw's drawing tools
+- Select your drawing and a contextual toolbar appears
+- Choose from quick style presets (Cartoon, Pixel Art, 3D Render, Sticker) or write custom prompts
+- AI generates a styled, high-quality image based on your sketch
 
-To use it, first draw a mockup for a piece of UI. When you're ready, select the drawing, and press
-the Make Real button. We'll capture an image of your selection, and send it to
-[GPT](https://platform.openai.com/docs/guides/vision) along with instructions to turn it into a HTML
-file.
+### 🎬 Images to Animation
 
-We take the HTML response and add it to a tldraw [custom
-shape](https://tldraw.dev/docs/shapes#Custom-shapes). The custom shape shows the response in an
-iframe so that you can interact with it on the canvas. If you want to iterate on the response,
-annotate the iframe, select it all, and press 'Make Real' again.
+- Generate multiple styled images of your character
+- Select 2 or more images to create an animation
+- AI generates a smooth video animation from your image sequence
+- Download the final animation as MP4
 
-## To make changes
+## Getting Started
 
-To change how Make Real works, start from the [`prompt.ts`](./app/prompt.ts) file. From there, you
-can change the prompt that gets sent to gpt-4.
+### Prerequisites
 
-You can edit the `makeReal` function in [`makeReal.ts`](./app/lib/makeReal.tsx) to change what
-happens when you hit the Make Real button.
+- Node.js 18+ installed
+- A fal.ai API key (get one at [fal.ai/dashboard/keys](https://fal.ai/dashboard/keys))
 
-If you'd like Make Real to create something other than HTML, you'll need to either update the
-[`PreviewShape`](./app/PreviewShape/PreviewShape.tsx) to display something different, or use one of
-tldraw's built-in shapes like image or text.
+### Installation
 
-## The dangerous API key input method
+1. Clone the repository:
 
-For prototyping, we've also included the `RiskyButCoolAPIKeyInput`, similar to the one found on
-[makereal.tldraw.com](https://makereal.tldraw.com). Please use this as carefully and ethically as
-you can, as users should be reluctant to add API keys to public sites.
+```bash
+git clone <repository-url>
+cd ai-canvas-character-creator
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Create a `.env.local` file and add your fal.ai API key:
+
+```bash
+NEXT_PUBLIC_FAL_KEY=your-fal-api-key-here
+```
+
+Alternatively, you can enter your API key directly in the app's input field at runtime.
+
+4. Run the development server:
+
+```bash
+npm run dev
+```
+
+5. Open [http://localhost:3000](http://localhost:3000) in your browser
+
+## How to Use
+
+### Creating Styled Images
+
+1. Use tldraw's drawing tools to sketch a character or object
+2. Select your drawing (click or drag to select)
+3. A contextual toolbar will appear at the bottom
+4. Choose a quick style preset or type a custom prompt (max 50 characters)
+5. Click "✨ Generate Image"
+6. Wait for the AI to generate your styled image
+7. The image will appear on the canvas next to your drawing
+
+### Creating Animations
+
+1. Generate 2 or more styled images using the process above
+2. Select multiple images (hold Shift and click, or drag to select)
+3. The animation toolbar will appear showing the selection order
+4. Click "🎬 Create Animation"
+5. Wait 30-60 seconds for the video to generate
+6. Preview the animation in the toolbar
+7. Click "📥 Download Animation" to save the MP4 file
+
+## Tech Stack
+
+- **Frontend**: Next.js 14, React, TypeScript
+- **Canvas**: tldraw v3
+- **AI**: fal.ai (flux-dev for image generation, kling-video for animations)
+
+## Project Structure
+
+```
+app/
+├── api/
+│   ├── generate-image/route.ts      # Image generation API
+│   └── generate-animation/route.ts  # Animation generation API
+├── components/
+│   ├── tools/
+│   │   ├── DoodleToImageTool.tsx    # Doodle → Image UI
+│   │   ├── ImageToAnimationTool.tsx # Images → Animation UI
+│   │   └── tools.css                # Toolbar styling
+│   ├── ToolbarContainer.tsx         # Main toolbar orchestrator
+│   ├── LoadingIndicator.tsx         # Loading spinner component
+│   └── RiskyButCoolAPIKeyInput.tsx  # API key input
+├── lib/
+│   ├── detectSelectionType.ts       # Selection analyzer
+│   ├── captureShapesAsImage.ts      # Canvas export utility
+│   ├── placeImageOnCanvas.ts        # Image placement utility
+│   └── blobToBase64.ts              # Blob conversion
+└── page.tsx                         # Main app entry
+```
+
+## API Models Used
+
+- **Image Generation**: `fal-ai/flux/dev` - Generates high-quality styled images from sketches
+- **Video Animation**: `fal-ai/kling-video/v1/standard/image-to-video` - Creates smooth animations from image sequences
+
+## Development Notes
+
+### Selection Detection
+
+The app uses a smart selection detection system that shows different tools based on what's selected:
+
+- **Drawings selected** (draw, geo, arrow shapes) → Show Doodle to Image tool
+- **2+ images selected** → Show Animation tool
+- **1 image selected** → (Reserved for future "Make it Talk" feature)
+- **Nothing/mixed selection** → Hide toolbar
+
+### Error Handling
+
+All API calls include comprehensive error handling:
+
+- API key validation before making requests
+- User-friendly toast notifications for errors
+- Console logging for debugging
+- Timeout handling for long-running operations
+
+## Troubleshooting
+
+### "API Key Required" error
+
+Make sure you've entered your fal.ai API key in either:
+
+- The `.env.local` file as `NEXT_PUBLIC_FAL_KEY`
+- The input field at the bottom of the app
+
+### Image generation fails
+
+- Check that your fal.ai API key is valid
+- Ensure you have sufficient credits in your fal.ai account
+- Try a simpler prompt if the generation times out
+
+### Animation generation takes too long
+
+- Video generation typically takes 30-60 seconds
+- Make sure you have a stable internet connection
+- If it times out, try with fewer images or simpler images
+
+## Future Enhancements
+
+- **Talking Characters**: Add text-to-speech and lip-sync animation
+- **Asset Gallery**: History panel to browse previously generated assets
+- **Advanced Prompts**: More detailed prompt templates and controls
+- **Export Options**: Multiple video formats and resolutions
+- **Collaborative Features**: Share and remix animations
+
+## License
+
+See LICENSE file for details.
+
+## Credits
+
+Built with:
+
+- [tldraw](https://tldraw.dev) - Infinite canvas SDK
+- [fal.ai](https://fal.ai) - AI model hosting
+- [Next.js](https://nextjs.org) - React framework
