@@ -1,5 +1,7 @@
-import * as fal from '@fal-ai/serverless-client'
+import { fal } from '@fal-ai/client'
 import { NextRequest, NextResponse } from 'next/server'
+
+const FAL_KEY = process.env.FAL_KEY
 
 export async function POST(request: NextRequest) {
 	try {
@@ -13,41 +15,51 @@ export async function POST(request: NextRequest) {
 			)
 		}
 
-		if (!apiKey) {
+		let finalApiKey = apiKey ?? FAL_KEY
+		if (!finalApiKey) {
 			return NextResponse.json({ success: false, error: 'API key is required' }, { status: 400 })
 		}
-
 		// Configure fal.ai client
-		fal.config({ credentials: apiKey })
+		fal.config({ credentials: finalApiKey })
+
+		// Convert base64 to data URI for fal.ai
+		// The client will auto-upload the file for us
+		const dataUri = imageBase64.startsWith('data:')
+			? imageBase64
+			: `data:image/png;base64,${imageBase64}`
 
 		// Combine user prompt with base prompt for better results
-		const finalPrompt = `high-quality character art, clean lines, ${prompt}`
+		const finalPrompt = `Transform this sketch into: high-quality character art, clean lines, ${prompt}`
 
-		// Call fal.ai flux model with image input for better results
-		// Using flux-dev which supports image-to-image
-		const result = await fal.subscribe('fal-ai/flux/dev', {
+		// Call fal.ai Gemini model for image editing
+		const result = await fal.subscribe('fal-ai/gemini-25-flash-image/edit', {
 			input: {
 				prompt: finalPrompt,
-				image_url: imageBase64,
-				num_inference_steps: 28,
-				guidance_scale: 3.5,
+				image_urls: [dataUri],
 				num_images: 1,
-				enable_safety_checker: false,
+				output_format: 'jpeg',
 			},
 			logs: true,
-			onQueueUpdate: (update) => {
+			onQueueUpdate: (update: any) => {
 				if (update.status === 'IN_PROGRESS') {
-					console.log('Generation in progress...')
+					update.logs?.map((log: any) => log.message).forEach(console.log)
 				}
 			},
 		})
 
+		console.log('API Result:', JSON.stringify(result, null, 2))
+
 		// Extract the image URL from the result
-		const imageUrl = result.data.images[0].url
+		const imageUrl = result.data?.images?.[0]?.url
+
+		if (!imageUrl) {
+			throw new Error('No image URL in response: ' + JSON.stringify(result))
+		}
 
 		return NextResponse.json({
 			success: true,
 			imageUrl: imageUrl,
+			description: result.data?.description,
 		})
 	} catch (error: any) {
 		console.error('Error generating image:', error)

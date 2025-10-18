@@ -20,11 +20,7 @@ export function RiskyButCoolAPIKeyInput() {
 				<div className="input__wrapper">
 					<input
 						id="fal_key_input"
-						defaultValue={
-							process.env.NEXT_PUBLIC_FAL_KEY ??
-							localStorage.getItem('doodle_animator_fal_key') ??
-							''
-						}
+						defaultValue={localStorage.getItem('doodle_animator_fal_key') ?? ''}
 						onChange={handleChange}
 						spellCheck={false}
 						autoCapitalize="off"

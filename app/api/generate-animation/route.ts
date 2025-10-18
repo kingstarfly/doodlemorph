@@ -1,4 +1,4 @@
-import * as fal from '@fal-ai/serverless-client'
+import { fal } from '@fal-ai/client'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
 				aspect_ratio: '16:9',
 			},
 			logs: true,
-			onQueueUpdate: (update) => {
+			onQueueUpdate: (update: any) => {
 				if (update.status === 'IN_PROGRESS') {
 					console.log('Video generation in progress...', update)
 				}
