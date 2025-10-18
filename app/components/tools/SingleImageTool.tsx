@@ -29,6 +29,7 @@ export function SingleImageTool(props: SingleImageToolProps) {
 	const [animationPrompt, setAnimationPrompt] = useState(
 		'smooth animation sequence, character movement, consistent style, natural motion'
 	)
+	const [generateAudio, setGenerateAudio] = useState(false)
 
 	const addVariant = useCallback(() => {
 		if (variants.length >= MAX_VARIANTS) {
@@ -186,6 +187,7 @@ export function SingleImageTool(props: SingleImageToolProps) {
 				body: JSON.stringify({
 					imageUrl,
 					prompt: animationPrompt,
+					generateAudio,
 				}),
 			})
 
@@ -225,7 +227,7 @@ export function SingleImageTool(props: SingleImageToolProps) {
 			})
 			setIsAnimationGenerating(false)
 		}
-	}, [editor, props.selectedShapes, addToast, animationPrompt])
+	}, [editor, props.selectedShapes, addToast, animationPrompt, generateAudio])
 
 	const handleVariantsClick = () => {
 		if (activeMode === 'variants') {
@@ -325,6 +327,18 @@ export function SingleImageTool(props: SingleImageToolProps) {
 							className="animation-prompt-input"
 							maxLength={200}
 						/>
+					</div>
+					<div className="animation-options">
+						<label className="audio-checkbox-label">
+							<input
+								type="checkbox"
+								checked={generateAudio}
+								onChange={(e) => setGenerateAudio(e.target.checked)}
+								disabled={isGenerating || isAnimationGenerating}
+								className="audio-checkbox"
+							/>
+							<span>🔊 Generate sound effects</span>
+						</label>
 					</div>
 					<button
 						onClick={handleGenerateAnimation}
