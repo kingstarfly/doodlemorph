@@ -12,7 +12,7 @@ const QUALITY_PROMPT_SUFFIX =
 const AUDIO_PROMPT_SUFFIX = ', include appropriate sound effects of the subject while it moves'
 
 const GenerateAnimationSchema = z.object({
-	imageUrl: z.string().url('Must be a valid URL'),
+	imageBase64: z.string().min(1, 'Image data is required'),
 	prompt: z.string().min(1).max(500).default('character movement'),
 	generateAudio: z.boolean().optional().default(false),
 	aspectRatio: z.enum(['16:9', '9:16']).optional().default('16:9'),
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
 		}
 		console.log('Validation data:', validation.data)
 
-		const { imageUrl, prompt, generateAudio, aspectRatio, resolution } = validation.data
+		const { imageBase64, prompt, generateAudio, aspectRatio, resolution } = validation.data
 
 		// Check for FAL API key in environment variables
 		if (!FAL_API_KEY) {
@@ -53,6 +53,12 @@ export async function POST(request: NextRequest) {
 		// Configure fal.ai client with FAL key
 		fal.config({ credentials: FAL_API_KEY })
 
+		// Convert base64 to data URI for fal.ai
+		// The client will auto-upload the file for us
+		const dataUri = imageBase64.startsWith('data:')
+			? imageBase64
+			: `data:image/png;base64,${imageBase64}`
+
 		// Combine user prompt with quality suffix and audio suffix if needed
 		let finalPrompt = prompt + QUALITY_PROMPT_SUFFIX
 		if (generateAudio) {
@@ -63,7 +69,7 @@ export async function POST(request: NextRequest) {
 		const result = await fal.subscribe('fal-ai/veo3.1/fast/image-to-video', {
 			input: {
 				prompt: finalPrompt,
-				image_url: imageUrl,
+				image_url: dataUri,
 				generate_audio: generateAudio,
 				aspect_ratio: aspectRatio as any, // API types are strict but accept these values
 				resolution: resolution as any, // API types are strict but accept these values

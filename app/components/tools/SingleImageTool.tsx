@@ -276,40 +276,9 @@ export function SingleImageTool(props: SingleImageToolProps) {
 				description: 'Getting ready to generate animation',
 			})
 
+			// Extract image as base64
 			const imageShape = props.selectedShapes[0] as TLImageShape
-			const assetId = imageShape.props?.assetId
-
-			if (!assetId) {
-				addToast({
-					icon: 'warning-triangle',
-					title: 'No image found',
-					description: 'Image shape has no assetId',
-				})
-				setIsAnimationGenerating(false)
-				return
-			}
-
-			const asset = editor.getAsset(assetId)
-			if (!asset || asset.type !== 'image') {
-				addToast({
-					icon: 'warning-triangle',
-					title: 'No image found',
-					description: 'Could not find image asset',
-				})
-				setIsAnimationGenerating(false)
-				return
-			}
-
-			const imageUrl = asset.props.src
-			if (!imageUrl) {
-				addToast({
-					icon: 'warning-triangle',
-					title: 'No image found',
-					description: 'Image has no source URL',
-				})
-				setIsAnimationGenerating(false)
-				return
-			}
+			const imageBase64 = await extractImageFromShape(editor, imageShape)
 
 			// Show generation toast
 			addToast({
@@ -323,7 +292,7 @@ export function SingleImageTool(props: SingleImageToolProps) {
 					'Content-Type': 'application/json',
 				},
 				body: JSON.stringify({
-					imageUrl,
+					imageBase64,
 					prompt: animationPrompt,
 					generateAudio,
 				}),

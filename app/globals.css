@@ -158,7 +158,8 @@
 .doodlemorph-logo {
 	position: absolute;
 	top: 8px;
-	left: 140px; /* Position after hamburger menu and page menu */
+	left: 10px;
+	top: 48px;
 	z-index: var(--layer-panels);
 	font-size: 16px;
 	font-weight: 600;
@@ -171,7 +172,8 @@
 /* Adjust for smaller screens */
 @media (max-width: 640px) {
 	.doodlemorph-logo {
-		left: 120px;
+		left: 10px;
+		top: 48px;
 		font-size: 14px;
 	}
 }

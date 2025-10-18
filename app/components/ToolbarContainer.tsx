@@ -1,3 +1,5 @@
+'use client'
+
 import { useEditor } from 'tldraw'
 import { useEffect, useState } from 'react'
 import { detectSelectionType, SelectionType } from '../lib/detectSelectionType'
