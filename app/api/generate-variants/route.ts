@@ -86,6 +86,16 @@ export async function POST(request: NextRequest) {
 				throw new Error(`No image URL in variant ${i + 1} response: ${JSON.stringify(result)}`)
 			}
 
+			// Track individual variant generation event
+			trackGenerationEvent('variant_generated', {
+				prompt: finalPrompt,
+				originalPrompt: variant.prompt,
+				sourceImageProvided: true,
+				outputImageUrl: imageUrl,
+				model: 'fal-ai/gemini-25-flash-image/edit',
+				variantIndex: i,
+			})
+
 			generatedVariants.push({
 				imageUrl,
 				prompt: variant.prompt,
