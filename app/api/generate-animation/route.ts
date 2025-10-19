@@ -1,6 +1,7 @@
 import { fal } from '@fal-ai/client'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
+import { trackGenerationEvent } from '@/app/lib/posthog-server'
 
 const FAL_API_KEY = process.env.FAL_API_KEY
 
@@ -87,6 +88,19 @@ export async function POST(request: NextRequest) {
 
 		// Extract the video URL from the result
 		const videoUrl = result.data.video.url
+
+		// Track generation event
+		trackGenerationEvent('video_generated', {
+			prompt: finalPrompt,
+			originalPrompt: prompt,
+			sourceImageProvided: true,
+			outputVideoUrl: videoUrl,
+			generateAudio: generateAudio,
+			aspectRatio: aspectRatio,
+			resolution: resolution,
+			model: 'fal-ai/veo3.1/fast/image-to-video',
+			requestId: result.requestId,
+		})
 
 		return NextResponse.json({
 			success: true,
