@@ -105,21 +105,14 @@
 
 /* Welcome text container */
 .welcome-text {
-	font-size: 48px;
-	font-weight: 800;
+	font-size: 42px;
+	font-weight: 600;
 	color: #333;
 	text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-	letter-spacing: 0.5px;
-	display: flex;
-	gap: 2px;
-	flex-wrap: wrap;
-	justify-content: center;
+	letter-spacing: 1.5px;
+	text-align: center;
+	max-width: 90%;
 	animation: simpleFadeIn 0.5s ease-in forwards;
-}
-
-/* Individual letter - no animation */
-.welcome-letter {
-	display: inline-block;
 }
 
 /* Fade out animation */
@@ -142,8 +135,9 @@
 	}
 
 	.welcome-text {
-		font-size: 32px;
-		padding: 0 20px;
+		font-size: 28px;
+		padding: 0 24px;
+		max-width: 95%;
 	}
 
 	.welcome-logo-container {
@@ -158,6 +152,8 @@
 	}
 
 	.welcome-text {
-		font-size: 24px;
+		font-size: 20px;
+		padding: 0 16px;
+		letter-spacing: 1px;
 	}
 }

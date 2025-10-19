@@ -27,13 +27,6 @@ export function WelcomeAnimation() {
 
 	if (!isVisible) return null
 
-	const text = 'Welcome to DoodleMorph'
-	const letters = text.split('').map((char, index) => (
-		<span key={index} className="welcome-letter">
-			{char === ' ' ? '\u00A0' : char}
-		</span>
-	))
-
 	return (
 		<div className={`welcome-animation-overlay ${isFadingOut ? 'fade-out' : ''}`}>
 			<div className="welcome-logo-container">
@@ -53,7 +46,7 @@ export function WelcomeAnimation() {
 				<div className="sparkle"></div>
 				<div className="sparkle"></div>
 			</div>
-			<div className="welcome-text">{letters}</div>
+			<div className="welcome-text">Welcome to DoodleMorph</div>
 		</div>
 	)
 }
