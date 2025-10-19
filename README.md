@@ -35,9 +35,9 @@ This project was built for the **Cursor Hackathon Singapore 2025** and is powere
 ### Official Sponsors
 
 - **[Fal.AI](https://fal.ai)** - Lightning-fast AI model hosting and inference for image generation
-- **[Gemini API](https://ai.google.dev/gemini-api)** - Google's powerful AI capabilities for intelligent prompt enhancement
+- **[Gemini API](https://ai.google.dev/gemini-api)** - Gemini 2.5 Flash for intelligent prompt enhancement
 - **[Veo 3.1](https://deepmind.google/technologies/veo/)** - Google DeepMind's state-of-the-art video generation model
-- **[Groq](https://groq.com)** - Ultra-fast AI inference with Llama 3.3 70B (GPT-OSS-20B) for prompt generation
+- **[Groq](https://groq.com)** - Ultra-fast AI inference with GPT OSS for additional prompt generation
 
 ---
 
@@ -55,9 +55,9 @@ This project was built for the **Cursor Hackathon Singapore 2025** and is powere
 - **[Fal.AI Client](https://fal.ai)** - AI model inference and hosting
   - Flux-Dev: High-quality image generation
   - Kling Video: Advanced video synthesis
-- **[Groq AI SDK](https://groq.com)** - Fast LLM inference with Llama 3.3 70B
+- **[Google Gemini API](https://ai.google.dev/gemini-api)** - Gemini 2.5 Flash for prompt enhancement and refinement
+- **[Groq AI SDK](https://groq.com)** - Fast LLM inference with GPT OSS
 - **[Vercel AI SDK](https://sdk.vercel.ai)** - Unified AI SDK for model integration
-- **Google Gemini API** - Prompt enhancement and refinement
 - **Veo 3.1** - Cinematic video generation from images
 
 ---
