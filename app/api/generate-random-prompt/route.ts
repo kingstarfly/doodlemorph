@@ -1,21 +1,21 @@
-import { groq } from '@ai-sdk/groq'
+import { google } from '@ai-sdk/google'
 import { generateText } from 'ai'
 import { NextRequest, NextResponse } from 'next/server'
 
-const GROQ_API_KEY = process.env.GROQ_API_KEY
+const GOOGLE_API_KEY = process.env.GOOGLE_GENERATIVE_AI_API_KEY
 
 export async function POST(req: NextRequest) {
 	try {
-		// Check for Groq API key in environment variables
-		if (!GROQ_API_KEY) {
+		// Check for Google API key in environment variables
+		if (!GOOGLE_API_KEY) {
 			return NextResponse.json(
-				{ success: false, error: 'GROQ API key is not configured on the server' },
+				{ success: false, error: 'Google API key is not configured on the server' },
 				{ status: 500 }
 			)
 		}
 
 		const { text } = await generateText({
-			model: groq('llama-3.3-70b-versatile'),
+			model: google('gemini-2.5-flash'),
 			prompt: `Generate a short, creative image variation prompt (max 10 words) for modifying a character or object. 
 Examples: "wearing a wizard hat", "in cyberpunk style", "with rainbow colors", "doing a backflip", "as a superhero".
 Just return the prompt text, nothing else.`,
