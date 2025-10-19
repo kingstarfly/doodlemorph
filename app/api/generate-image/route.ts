@@ -1,6 +1,7 @@
 import { fal } from '@fal-ai/client'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
+import { trackGenerationEvent } from '@/app/lib/posthog-server'
 
 const FAL_API_KEY = process.env.FAL_API_KEY
 
@@ -72,6 +73,15 @@ export async function POST(request: NextRequest) {
 		if (!imageUrl) {
 			throw new Error('No image URL in response: ' + JSON.stringify(result))
 		}
+
+		// Track generation event
+		trackGenerationEvent('image_generated', {
+			prompt: finalPrompt,
+			originalPrompt: prompt,
+			sourceImageProvided: true,
+			outputImageUrl: imageUrl,
+			model: 'fal-ai/gemini-25-flash-image/edit',
+		})
 
 		return NextResponse.json({
 			success: true,
