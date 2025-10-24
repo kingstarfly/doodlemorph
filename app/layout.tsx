@@ -5,8 +5,8 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-	title: 'Doodlemorph',
-	description: 'draw a doodle and make it morph',
+	title: 'DoodleMorph',
+	description: 'Draw a doodle and make it morph',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
